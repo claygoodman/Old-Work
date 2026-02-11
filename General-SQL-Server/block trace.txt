@@ -1,0 +1,1 @@
+dbcc traceon 1222 -1	--writes blocks to t-log

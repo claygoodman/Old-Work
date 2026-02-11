@@ -1,0 +1,104 @@
+﻿param([DateTime]$PayPeriod, [String]$FleetCode, [String]$OutputDir);
+
+#################################################################################################
+# DESCRIPTION:     Simple invocation of the SSRS Execution Service to render a report to PDF.
+# AUTHOR:          Scott Applefeld - ASR Solutions
+# DATED:           03/15/2016 12:00 PM CST
+#################################################################################################
+
+# REPORT PARAMETERS.  THESE SHOULD BE SET TO CALL SOME SET OF ORDERS IN A LIST.
+$OutputDir = $OutputDir.TrimEnd("\") + "\";
+$FilePath = $OutputDir + [String]::Format("{0:yyyy-MM-dd}", [DateTime]::Parse($PayPeriod)) + "\";
+$ConnString = "Data Source=DBSQL12VA20\BRDGPRD;Initial Catalog=TMW_Live;UID=BoDaRptEml;PWD=NV7zpr9#cpqm5;";
+#Added for insert in for loop
+$SqlConnection = New-object System.Data.SqlClient.SqlConnection("Data Source=BRDGSQLDEV;Initial Catalog=TMW_Live;UID=BoDaRptEml;PWD=NV7zpr9#cpqm5");
+
+$SqlF1 = "UPDATE BRDG_Fleets SET FileStart = GETDATE() WHERE Fleet = '" +$FleetCode + "' AND PayDate = '" + $PayPeriod + "'";
+$Connection1 = New-object System.Data.SqlClient.SqlConnection;
+$Connection1.ConnectionString = $ConnString;
+$Connection1.Open();
+$SqlUpdate = New-Object System.Data.SqlClient.SqlCommand;
+$SqlUpdate.Connection = $Connection1;
+$SqlUpdate.CommandText = $SqlF1;
+$SqlUpdate.ExecuteNonQuery();
+
+
+
+# SERVER PARAMETERS FOR GENERATING PDF AND REPORT TO EXPORT.
+$HostName = "http://10.150.62.136";
+$HostPath = "/ReportServer/Pages/ReportViewer.aspx?";
+$ReportPath = "/TMWInterfaces/BRG_SettlementSheet";
+$RenderMode = "&rs:Format=PDF";
+$StaticParams = "&drv_yes=YES&report_type=FINAL&trc_yes=XXX&trl_yes=XXX&type1=UNK&terminal=UNK&workperiodend=2049-12-31&name=NULL&car_yes=XXX&hld_yes=N&pyhnumber=0&tpr_yes=XXX&relcol=Y&relncol=N&workperiodstart=2049-12-31";
+
+# GET THE LIST OF DRIVERS TO PROCESS FOR THIS PERIOD AND FOR THE FLEET CODE.
+$SqlConn = new-object System.Data.SqlClient.SqlConnection($ConnString);
+$SqlQuery = @"  
+                SELECT	[ID]    = H.[asgn_id]
+                        ,[NAME] = REPLACE(M.[mpp_lastname],'`"','') + ', ' + REPLACE(M.[mpp_firstname],'`"','')
+                FROM	PayHeader H WITH (NOLOCK)
+		                INNER JOIN ManPowerProfile M WITH (NOLOCK)
+			                ON H.[asgn_id] = M.[mpp_id]
+                WHERE	M.[mpp_type1] IN ('OO','OWNONL')
+		                AND H.[pyh_payperiod] = '$PayPeriod'
+		                AND M.[mpp_fleet] = '$FleetCode'
+                        AND M.mpp_status NOT IN ('OUT','PTERMI','PTERM') 
+"@;
+$SqlAdapter = new-object System.Data.SqlClient.SqlDataAdapter($SqlQuery, $SqlConn);
+$SqlTable = new-object System.Data.DataTable;
+$SqlAdapter.Fill($SqlTable) | Out-Null;
+$DriverList = @($SqlTable)
+
+# FILE OUTPUT PARAMETERS AND VERIFICATION OF WRITE PATHS.
+$PayMonth = [String]::Format("{0:MMM_yyyy}", [DateTime]::Parse($PayPeriod)).ToUpper();
+[System.IO.Directory]::CreateDirectory($FilePath) | Out-Null;
+[System.IO.Directory]::CreateDirectory($FilePath + $FleetCode) | Out-Null;
+
+# COUNT VARIABLES TO CONTROL PROGRESS THROUGH THE PROCESS.
+$TotalDrivers = $DriverList.Count;
+$CurrentDriver = 0;
+$error.clear()
+
+# BEGIN LOOP.  THIS WILL LOOP THROUGH ALL ITEMS POPULATED INTO THE $ORDERLIST.
+foreach ($DriverNum in $DriverList.GetEnumerator())
+{
+    # SET THE FILE OUTPUT NAME, USUALLY USING THE $ORDERNUM (AND OTHER VALUES) IN SOME WAY.
+    $FileName = $FilePath + $FleetCode + "\" + $DriverNum.ID + "_" + $DriverNum.Name + "_" + $PayMonth + ".pdf";
+    
+    # UPDATE STATUS FOR THE LOOP AND TOTAL COUNT.
+    $DriverID = $DriverNum.ID;
+    $DriverName = $DriverNum.NAME;
+    $CurrentDriver = $CurrentDriver + 1;
+    #Write-Output "$CurrentDriver of $TotalDrivers : Exporting Settlement Sheet for $DriverID to $FileName";
+
+    #added for tracking bar
+    $SqlQ2 =  "INSERT BRDG_EmailSettlements(PayTo,Fleet,RptFileName,PayDate) VALUES(" + "'$DriverID'," + "'$FleetCode'," + "'$FileName'," + "'$PayPeriod')";   
+    $Connection2 = New-object System.Data.SqlClient.SqlConnection;
+    $Connection2.ConnectionString = $ConnString;
+    $Connection2.Open();
+    $SqlUpdate2 = New-Object System.Data.SqlClient.SqlCommand;
+    $SqlUpdate2.Connection = $Connection2;
+    $SqlUpdate2.CommandText = $SqlQ2;
+    $SqlUpdate2.ExecuteNonQuery();
+
+    # WEB PARAMETERS.  THESE ARE USED TO PASS IN THE REQUIRED PARAMETERS FOR THE REPORT.
+    $Parameter1 = "&payperiodstart=" + $PayPeriod + "&payperiodend=" + $PayPeriod;
+    $Parameter2 = "&id=" + $DriverNum.ID;
+
+    # BUILD A WEB REQUEST PATH BASED UPON THE PARAMETERS SHOWN ABOVE.
+    $SourcePath = $HostName + $HostPath + $ReportPath + $RenderMode + $Parameter1 + $Parameter2 + $StaticParams;
+
+    # INVOKE A WEB REQUEST USING WINDOWS CREDENTIALS AND OUTPUTTING RETURNED FILE TO THE PATH.
+    Invoke-WebRequest $SourcePath -UseDefaultCredentials -OutFile $FileName 
+}
+#at the end update a flag in a table showing all the records for a given fleet are complete
+    $SqlQ3 = "UPDATE BRDG_Fleets SET FileEnd = GETDATE() WHERE Fleet = '" +$FleetCode + "' AND PayDate = '" + $PayPeriod + "'";
+    $Connection3 = New-object System.Data.SqlClient.SqlConnection;
+    $Connection3.ConnectionString = $ConnString;
+    $Connection3.Open();
+    $SqlUpdate3 = New-Object System.Data.SqlClient.SqlCommand;
+    $SqlUpdate3.Connection = $Connection3;
+    $SqlUpdate3.CommandText = $SqlQ3;
+    $SqlUpdate3.ExecuteNonQuery();
+
+

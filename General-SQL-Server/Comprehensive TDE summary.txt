@@ -1,0 +1,56 @@
+
+General Information on TDE
+
+TDE (Transparent Data Encryption) encrypts one or more databases and  the tempdb. TDE is limited to the server hosting the database to encrypt and requires either a symmetric or an asymmetric encryption key. Symmetric keys provide faster performance, greater implementation efficiency and lower cost than asymmetric keys. TDE does not encrypt communications to and from a database server like RELSQL01 so any confidential exchange must be encrypted in transit using SSL configured for the SQL Server. Some clients may be unable to open encrypted communications when SSL is deployed on the SQL Server.
+
+TDE provides real-time I/O encryption and decryption of data and logs on the server hosting the encrypted database. Any backups of a TDE enabled database are encrypted as well.
+
+Generally encrypting a database benefits security and performance of an individual database and negatively affects the performance of unencrypted databases and the server hosting TDE. Replication, mirroring and log-shipping are affected and all members of a cluster must be configured using the same resources (Master Key, Certificate, Asymmetric Key (EKM))  for encryption. If but a few databases were encrypted on RELSQL01 the other databases would experience degraded performance. For best performance, all databases should be encrypted. TDE will hit CPU utilization in the range of 3% - 5%.
+Since SQL Server 2008 and 2008r2 have been on the market for 5 years some of the encryption algorithms have been improved. The entire family available for 2008 are: DES, Triple DES, TRIPLE_DES_3KEY, RC2, RC4, 128-bit RC4, DESX, 128-bit AES, 192-bit AES, and 256-bit AES.  Greater levels of encryption are possible with the newer versions of SQL Server. Much depends upon the resources and APIs from Windows.
+
+BOL Quotes
+“Transparent data encryption (TDE) encrypts the storage of an entire database. TDE encrypts the data using a symmetric key called the database encryption key.”
+“Transparent data encryption (TDE) performs real-time I/O encryption and decryption of the data and log files. The encryption uses a database encryption key (DEK), which is stored in the database boot record for availability during recovery. The DEK is a symmetric key secured by using a certificate stored in the master database of the server or an asymmetric key protected by an EKM module. TDE protects data "at rest", meaning the data and log files. It provides the ability to comply with many laws, regulations, and guidelines established in various industries. This enables software developers to encrypt data by using AES and 3DES encryption algorithms without changing existing applications.”
+There are some informative links in BOL. Start the Index and type “Encryption”, select about encryption under encryption [SQL Server]; Encryption Hierarchy provides a process flow diagram showing the many layers involved in encryption. Another helpful BOL link is “transparent data encryption” under the same listing.
+
+Terms and Facts
+TDE: Transparent Data Encryption
+SMK: Service Master Key
+DMK: Database Master Key 
+DEK: Database encryption Key
+Symmetric Key
+Asymmetric Key
+EKM: Extensible Key Management
+
+There are 18 different cryptographic functions within T-SQL plus the those for managing keys. Column level encryption can be added to a TDE database further securing data. For example a server using SSL, column level encryption and TDE is secured in communication, memory and in recovery scenarios. TDE does not encrypt data in memory so anyone with admin access to SQL Server or database ownership may be able to read data in memory on the server with TDE. If a column is encrypted that becomes less likely.
+
+Architecture
+The Windows OS provides the Data Protection API used to generate a Service Master Key that is initiated when SQL Server starts for the first time. The SMK is used to generate the Database Master Key and the DMK is used to generate a Database Encryption Key DEK. Once that is created database encryption can be “turned on” for the database of interest. This architecture is more complex when an asymmetric key is employed.
+
+TDE Process Overview
+If one used a symmetric encryption key the process would be similar to this:
+
+1)	Create a database master key in the master database
+2)	Create a (master key) certificate in the master database
+3)	Create a database encryption key using the master's certificate
+4)	Turn on encryption in the user database
+
+Databases to be encrypted are placed into single user mode so there would be outages during an encryption implementation period for each database to be encrypted.
+
+TDE Risks
+•	The encryption keys must be present on the destination to restore a database so encrypted to another server.  No one could restore the encrypted database to any server or destination that does not have the encryption key nor could anyone convert it to text without unencrypting it. The service master key must be backed up and stored at high security location on every occasion it is changed and backed up. If the server ever “burned down” and the key was lost the databases would be universally unrecoverable. Encryption imposes higher standards of security and recoverability for SQL Server elements that may raise costs.
+•	It is very possible that lite speed is incompatible with TDE: see http://documents.quest.com/DOC113121. As lite speed is an unnecessary cost to A&M I can provide replacement backup and restore routines that are more efficient than lite speed that overcome any such limitations.
+•	The article above reads, “Object Level Recovery does not support databases encrypted using SQL Server 2008 Transparent Data Encryption (TDE).” This may be related to the master key issue but the article does not make this clear.
+•	TempDB data store and Snapshot Isolation Level have experienced “issues” (A.K.A. bugs) in 2008 and 2008R2 that were resolved in 2012. The bugs are obscure and poorly documented indicating they may not arise as issues.
+•	There is a CPU “penalty” to using TDE. CPU utilization on RELSQL01 has not been negative when I have monitored it. Further analysis of CPU utilization should be made before implementing TDE. Further optimizations of I/O on the SAN should be explored since I/O latency can be enhanced with TDE.
+•	Alterations to encrypted databases are affected and some database changes can prevent a database from being loaded at startup making it inaccessible. During the encryption process maintenance operations and general access are disabled because the database is set into single user mode during the process. 
+•	Full Text indexes may/may not be encrypted with certainty. 
+•	TDE “zero’s out” the database log files such that any transactions present are rolled back or pushed forward. 
+•	All backups prior to encryption and those after encryption are no longer compatible. A full backup must be executed on the encrypted database and new differentials taken to establish a new backup chain. (There currently are no log backups.)
+•	Other potential benefits and issues exist.
+
+I imagine you will have questions. Please ask.
+
+--Don
+
+

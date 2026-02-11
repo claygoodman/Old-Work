@@ -1,0 +1,5 @@
+get-adcomputer -filter {name -like 'sql*'} | find-DbaInstance | Select *
+
+Find-DbaInstance -DiscoveryType Domain, DataSourceEnumeration
+
+[System.Data.Sql.SqlDataSourceEnumerator]::Instance.GetDataSources()

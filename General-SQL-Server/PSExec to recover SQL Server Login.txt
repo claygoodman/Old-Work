@@ -1,0 +1,9 @@
+PsExec -s -i "C:\Program Files (x86)\Microsoft SQL Server\110\Tools\Binn\ManagementStudio\Ssms.exe"
+
+
+
+•You must be a local Administrator to masquerade as NT AUTHORITY\SYSTEM. 
+•You may need to disable UAC. 
+•You may also be able to do this remotely, but since I work primarily in virtual machines, I did not test this.
+ •If you change the sa password, and you've used the sa account for external programs (which you shouldn't do), you will need to update those programs. Here is a tip for updating the password used in maintenance plans.
+ •Leave the command prompt running in the background until you're done with all of your changes - if you inadvertently Ctrl+C from within the command prompt, SSMS will vanish. 

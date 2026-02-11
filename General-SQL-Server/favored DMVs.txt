@@ -1,0 +1,17 @@
+sys.dm_exec_requests 
+sys.dm_exec_sessions
+sys.dm_os_workers
+sys.dm_os_sys_info
+sys.dm_os_wait_stats
+dbcc sqlperf('sys.dm_os_wait_stats', clear)
+sys.dm_os_waiting_tasks
+sys.dm_exec_requests
+sys.dm_exec_sessions
+sys.dm_os_tasks
+sys.dm_exec_query_resource_semaphores
+sys.dm_exec_query_memory_grants
+sys.dm_exec_query_memory_clerks
+sys.dm_os_memory_brokers
+sys.dm_os_latch_stats
+sys.dm_xe_sessions
+sys.dm_ex_session_targets
