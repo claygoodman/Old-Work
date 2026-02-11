@@ -1,0 +1,12 @@
+=IIF(IsNothing(SUM(
+Fields!wgtScore.Value)/SUM(Fields!Orders.Value
+)),0.00,SUM(
+Fields!wgtScore.Value)/SUM(Fields!Orders.Value
+))
+
+
+
+=replace(round(((SUM(
+Fields!wgtEndTrip.Value)/SUM(Fields!Orders.Value
+))*100),2),"NaN",0)+"%"
+

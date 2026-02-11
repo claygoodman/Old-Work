@@ -1,0 +1,33 @@
+DateTime SunDate;
+DateTime SatDate;
+
+SunDate = Convert.ToDateTime(lblSunDate.Text);
+SatDate = Convert.ToDateTime(lblSatDate.Text);
+
+// call the procedure as follows
+
+SqlCommand Ld = new SqlCommand("p_BRDG_LoadWexIntoTMW", SqlConn);
+Ld.CommandType = CommandType.StoredProcedure;
+Ld.Parameters.Add(new SqlParameter("@MinPostDate", SunDate.ToString("d"))); //maps the label.text to datetime to string for procedure call that SQL Converts on the fly to datetime
+Ld.Parameters.Add(new SqlParameter("@MaxPostDate", SatDate.ToString("d")));
+var L1 = Ld.ExecuteNonQuery();
+
+
+
+//Date Formats to pass to SQL after converting strings to dates
+
+d: 6/15/2008 
+D: Sunday, June 15, 2008 
+f: Sunday, June 15, 2008 9:15 PM 
+F: Sunday, June 15, 2008 9:15:07 PM 
+g: 6/15/2008 9:15 PM 
+G: 6/15/2008 9:15:07 PM 
+m: June 15 
+o: 2008-06-15T21:15:07.0000000 
+R: Sun, 15 Jun 2008 21:15:07 GMT 
+s: 2008-06-15T21:15:07 
+t: 9:15 PM 
+T: 9:15:07 PM 
+u: 2008-06-15 21:15:07Z 
+U: Monday, June 16, 2008 4:15:07 AM 
+y: June, 2008 
