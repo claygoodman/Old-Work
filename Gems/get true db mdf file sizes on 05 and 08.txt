@@ -1,0 +1,4 @@
+SELECT sys.databases.name, sys.master_files.name AS dbFileName, sys.master_files.size/128 FROM sys.master_files
+INNER JOIN sys.databases ON sys.databases.database_id = sys.master_files.database_id
+WHERE sys.master_files.type = 0 AND sys.master_files.database_id NOT IN (2,3,4) 
+AND sys.master_files.physical_name NOT LIKE '%ldf'

@@ -1,0 +1,1 @@
+BACKUP SERVICE MASTER KEY TO FILE = 'C:\SQLBackup\service_master_key' ENCRYPTION BY PASSWORD = 'al1%Gskmdfaslfsalfksafh'

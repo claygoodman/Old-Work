@@ -1,0 +1,18 @@
+Schedule the following commands via the Windows Scheduler to regain sysadmin rights 
+
+Steps: 
+
+1. Remote desktop or login locally to the SQL Server 
+2. Run the follow commands via command prompt (cmd.exe) 
+
+
+For servers configured for Mixed Mode Authentication (SQL Server and Windows Authentication)
+at 22:50 sqlcmd -E -S ServerName\Instance -Q "CREATE LOGIN TempUnlock WITH PASSWORD = ‘<StrongPasswordHere>', CHECK_POLICY = OFF, DEFAULT_DATABASE=[master]"
+
+at 22:50 sqlcmd -E -S ServerName\InstanceName -Q "EXEC master..sp_addsrvrolemember @loginame = N'TempUnlock', @rolename = N'sysadmin'" 
+
+For servers configured for Windows Authentication Only
+At 22:50 sqlcmd -E -S ServerName\InstanceName -Q "CREATE LOGIN [Domain\GroupOrUser] FROM WINDOWS WITH DEFAULT_DATABASE=[master]"
+
+At 22:50 sqlcmd -E -S ServerName\InstanceName -Q "EXEC master..sp_addsrvrolemember @loginame = N'Domain\GroupOrUser', @rolename = N'sysadmin'" 
+
