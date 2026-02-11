@@ -1,0 +1,13 @@
+USE msdb
+SELECT name FROM sys.databases WHERE 
+NAME NOT IN (
+SELECT MDB.database_name
+--,NTILE(2) OVER (ORDER BY Backup_finish_Date) 
+FROM dbo.backupset MDB
+INNER JOIN sys.databases SD ON
+MDB.database_name = SD.name
+WHERE MDB.backup_finish_date > '2013-02-01'
+)
+AND database_id > 4
+
+--SELECT COUNT(*) FROM sys.databases WHERE database_id > 4

@@ -1,0 +1,2 @@
+SELECT name FROM sys.databases WHERE NAME NOT IN ('master','tempdb','msdb','model','zsoset_blockingmonitor','opsmetrics')
+AND state = 0

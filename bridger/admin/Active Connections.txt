@@ -1,0 +1,18 @@
+SELECT 
+Sp.SPID
+,Sp.Status
+,Sp.Last_Batch
+,s2.text
+,DB_NAME(Sp.DBID) as [Database]
+,Sp.HostName
+,Sp.Loginame
+,Sp.[Program_Name]
+,Sp.Open_tran
+,SP.blocked
+FROM sys.sysprocesses sp 
+CROSS APPLY Sys.Dm_Exec_Sql_Text(Sp.Sql_Handle) As S2 
+WHERE SP.spid > 50 
+AND sp.dbid > 4 AND SP.open_tran > 0
+ORDER BY SP.[program_name] DESC
+
+

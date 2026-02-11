@@ -1,0 +1,8 @@
+
+UPDATE log_shipping_primary_databases 
+SET backup_directory = '\\005-TK5SPBK-01' + RIGHT(backup_directory,LEN(backup_directory)-16)
+FROM msdb.dbo.log_shipping_primary_databases LSPD
+WHERE LEFT(backup_directory,16) = '\\005-TK5SPBK-03'
+
+
+--adjust the 16 value to 15 or whatever fits with the particular client naming convention

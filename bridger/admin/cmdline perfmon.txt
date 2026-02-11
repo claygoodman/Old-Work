@@ -1,0 +1,2 @@
+--cmdline perfmon utility
+typeperf "\Web Service(_Total)\Current Connections"

@@ -1,0 +1,6 @@
+
+IF EXISTS(SELECT * FROM sys.tables WHERE name = 'UserTracking')
+DROP TABLE UserTracking
+
+CREATE TABLE UserTracking(SPID INT, UStatus VARCHAR(200),HostName VARCHAR(200),LoginName NVARCHAR(255),Blocked INT,DBName VARCHAR(125)
+,ProgramName VARCHAR(250),LoginTime DATETIME, LastBatch DATETIME,SQLHandle NVARCHAR(MAX),SText NVARCHAR(MAX))

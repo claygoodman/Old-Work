@@ -1,0 +1,77 @@
+--USE THIS FOR SQL05 and SNOTSPEED
+--use this for Bridger
+
+SELECT BS.database_name, BMF.physical_device_name, BS.backup_finish_date FROM msdb.dbo.backupset BS
+INNER JOIN msdb.dbo.backupmediafamily BMF 
+ON BMF.media_set_id = BS.media_set_id
+WHERE BMF.physical_device_name NOT LIKE '%trn%'
+ORDER BY BS.backup_finish_date DESC
+
+
+
+
+  SELECT @@SERVERNAME, BS.Database_name, BS.backup_start_date, BS.backup_finish_date, BS.type, BMF.physical_device_name FROM msdb.dbo.backupset BS
+INNER JOIN msdb.dbo.backupmediafamily BMF
+ON BS.media_set_id = BMF.media_set_id
+WHERE BS.TYPE = 'D'
+--WHERE BS.TYPE = 'I'
+--WHERE BS.TYPE = 'L'
+AND backup_finish_date  > '2013-01-19'
+ORDER BY backup_finish_date DESC, database_name
+
+
+
+
+
+--WHEN The db is not discoverable by the checker
+
+SELECT name FROM sys.databases WHERE name NOT IN (SELECT BS.database_name FROM msdb.dbo.backupset BS
+WHERE BS.type = 'D' AND BS.backup_finish_Date > '2012-09-29')
+
+--for comparing to all that exist
+
+SELECT  BS.Database_name, SD.name, BS.backup_finish_date
+FROM msdb.dbo.backupset BS
+INNER JOIN sys.databases SD
+ON SD.name = BS.database_name
+WHERE 
+--BS.backup_finish_Date > '2012-08-01 21:13:01.000'
+AND 
+BS.type = 'D'
+ORDER BY  BS.Database_name
+
+
+
+
+--for reading the path
+  SELECT  
+BMF.logical_device_name
+,BMF.physical_device_name
+,BS.backup_finish_date
+,DENSE_RANK() OVER (ORDER BY BS.backup_finish_date DESC) AS DR
+FROM msdb.dbo.backupmediafamily BMF
+INNER JOIN msdb.dbo.backupset BS
+ON BMF.media_set_id = BS.media_set_id
+WHERE BMF.logical_device_name IS NOT NULL
+AND BMF.logical_device_name NOT LIKE '%tran%'
+AND BMF.logical_device_name NOT LIKE '%diff%'
+GROUP BY BS.backup_finish_date, BMF.logical_device_name, BMF.physical_device_name
+
+
+
+
+--MODIFIED STEVE FRAGMENT
+SELECT
+@@SERVERNAME 
+,BS.media_set_id
+,BS.backup_start_date
+,BS.type
+,BS.database_name
+,BMF.physical_device_name 
+FROM 
+msdb.dbo.backupset AS BS WITH (NOLOCK) 
+INNER JOIN msdb.dbo.backupmediafamily AS BMF WITH (NOLOCK) ON BS.media_set_id = BMF.media_set_id 
+WHERE 
+BS.database_name = 'GSK_Migrated_Community_Sites' 
+AND BS.is_copy_only = 0
+AND CHARINDEX(BS.type,'DIL') > 0

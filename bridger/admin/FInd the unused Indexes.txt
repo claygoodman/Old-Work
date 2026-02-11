@@ -1,0 +1,20 @@
+SELECT DB_NAME(SU.database_id) AS DBNM
+,OBJECT_NAME(SU.object_id) AS OBJNM
+,SI.name
+,SU.last_user_seek
+,SU.last_user_scan
+,SU.last_user_lookup
+,SU.last_system_scan
+FROM sys.indexes SI
+INNER JOIN sys.objects SO
+ON SI.object_id = SO.object_id
+LEFT JOIN sys.dm_db_index_usage_stats SU
+ON SI.object_id = SU.object_ID
+AND su.database_id = DB_ID()
+WHERE SO.type <> 'S'
+AND SI.type_desc <> 'Heap'
+AND SI.name NOT LIKE 'PK_%'
+AND (SU.user_seeks + SU.user_scans + SU.user_lookups <> 0)
+AND SU.last_system_scan IS NOT NULL
+
+

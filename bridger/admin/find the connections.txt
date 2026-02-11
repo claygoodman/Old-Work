@@ -1,0 +1,5 @@
+SELECT SDES.session_id, USER_NAME(user_id) AS USR , DB_NAME(database_id)  AS DB,SDER.command FROM sys.dm_exec_requests SDER
+INNER JOIN sys.dm_exec_sessions SDES ON
+SDER.session_id = SDES.session_id
+WHERE 
+DB_NAME(database_id) <> 'master'

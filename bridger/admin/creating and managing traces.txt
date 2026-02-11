@@ -1,0 +1,83 @@
+--starting and stopping traces
+sp_trace_setstatus @traceid = ,status = 
+
+status 
+0 stopped
+1 starts
+2 closes and deletes it from the server
+
+return codes
+0 = success
+1 = unknown error
+8 = invalid status
+9 = invalid handle
+13 = out of memory
+
+--*******************
+--CREATE TRACE
+--sp_trace_create @TraceID OUTPUT, @options, @tracefile, @maxfilesize, @stoptime, @filecount
+
+@options
+2 = TRACE_FILE_ROLLOVER
+4 = SHUTDOWN_ON_ERROR	;don't use
+8 = TRACE_PRODUCE_BLACKBOX	; don't use
+
+@maxfilesize
+5 mg default
+2G max
+
+@stoptime NULL to not stop
+
+@filecount 
+max rollover files; set high enough to retain your correct need
+
+
+DECLARE @RC int, @TraceID int, @on BIT
+EXEC @rc = sp_trace_create @TraceID output, 0, N'C:\SampleTrace'
+
+-- Select the return code to see if the trace creation was successful.
+SELECT RC = @RC, TraceID = @TraceID
+
+-- Set the events and data columns you need to capture.
+SELECT @on = 1
+
+--CREATE EVENTS
+
+-- 10 is RPC:Completed event 
+EXEC sp_trace_setevent @TraceID, 10, 1, @on 	--RPC: Completed textdata
+EXEC sp_trace_setevent @TraceID, 10, 13,@on	--RPC:Completed duration
+EXEC sp_trace_setevent @TraceID, 10, 8, @on	--RPC:Completed HostName
+
+-- 12 is SQL:BatchCompleted
+EXEC sp_trace_setevent @TraceID, 12, 15, @on 	--batch completed end time
+EXEC sp_trace_setevent @TraceID, 12, 13, @on	--batch completed duration
+EXEC sp_trace_setevent @TraceID, 12, 1, @on	--textData
+
+
+-- 13 is SQL:BatchStarting
+EXEC sp_trace_setevent @TraceID, 13, 14, @on 	--start time
+
+--ADD A FILTER
+--@TraceID, @ColumnID, @Logical_Operator, @comparison_operator, @value
+--traceid, columnID from event creation, logical operator is 0 for AND , 1 for OR
+-- comparison operator is typical math ops plus LIKE; like invokes % 
+EXEC sp_trace_setfilter @TraceID, 35, 0, 6, N'%SRP_DB%'
+
+--EXEC sp_trace_setfilter 1, 10, 0, 6, N'%Profiler%'
+
+--sp_trace_setstatus 
+@traceid, 
+@status 
+0 stop
+1 start
+2 close and delete from sys.traces
+
+-- Start Trace (status 1 = start)
+EXEC @RC = sp_trace_setstatus @TraceID, 1
+
+
+--FIND a TRACE ID with a know path
+SELECT ID FROM sys.traces WHERE Path = 'C:\SQLBackup\DurationTrace.trc'
+
+
+GO
