@@ -1,0 +1,43 @@
+DECLARE @Tbl TABLE(ID INT IDENTITY(1,1), DBName NVARCHAR(200))
+DECLARE @cnt INT = 1, @MAX INT, @SQL NVARCHAR(4000),@DBName NVARCHAR(200)
+DECLARE @cnt2 INT = 1, @MAX2 INT
+DECLARE @tblName NVARCHAR(400), @SchemaName NVARCHAR(400)
+
+IF OBJECT_ID('Tempdb.dbo.#tbl') IS NOT NULL
+DROP TABLE #tbl
+CREATE TABLE #Tbl(ID INT IDENTITY(1,1),SchemaName NVARCHAR(400), TblName NVARCHAR(400))
+
+BEGIN TRY
+
+INSERT @Tbl(DBName)
+SELECT name FROM sys.databases WHERE name <> 'ReportServerTempDB' AND database_id > 4 AND name NOT LIKE '%Test%' AND state=0
+SELECT @MAX = MAX(ID) FROM @Tbl
+
+WHILE @cnt <= @MAX
+BEGIN	
+		TRUNCATE TABLE #tbl
+		DBCC CHECKIDENT ("#Tbl",RESEED) 
+		SELECT @DBName = DBName FROM @Tbl WHERE ID = @cnt
+		--INSERT #Tbl(TblName) SELECT name FROM sys.tables WHERE name NOT LIKE '%sys%'	ORDER BY name
+		SET @SQL = 'INSERT #Tbl(SchemaName, TblName) SELECT TABLE_SCHEMA,TABLE_NAME FROM ' + @DBName + '.INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = ' + CHAR(39) + 'BASE TABLE' + CHAR(39)
+		--PRINT @SQL
+		EXEC sp_executesql @SQL
+		SET @cnt2 = 1
+		SELECT @MAX2 = MAX(ID) FROM #Tbl
+		WHILE @cnt2 <=@MAX2
+		BEGIN
+			SELECT @tblName = TblName FROM #Tbl WHERE ID = @cnt2
+			SELECT @SchemaName = SchemaName FROM #Tbl WHERE ID= @cnt2
+			SET @SQL = 'UPDATE STATISTICS ' + @DBName+ '.[' + @SchemaName  + '].[' + @tblName + '] WITH FULLSCAN' 
+			EXEC sp_executesql @SQL
+			--PRINT @SQL
+			SET @cnt2 = @cnt2 + 1
+		 END
+	SET @cnt = @cnt + 1
+END
+
+END TRY
+BEGIN CATCH
+SELECT @DBName, ERROR_MESSAGE(), ERROR_STATE(), ERROR_NUMBER()
+END CATCH
+

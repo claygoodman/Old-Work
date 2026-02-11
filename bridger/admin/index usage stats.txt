@@ -1,0 +1,17 @@
+SELECT 
+DB_NAME(db_id()) as DBNAME,   
+OBJECT_NAME(I.[OBJECT_ID]) AS [OBJECT NAME], 
+         I.INDEX_ID, I.[NAME] AS [INDEX NAME], 
+         USER_SEEKS, 
+         USER_SCANS, 
+         USER_LOOKUPS, 
+         USER_UPDATES 
+FROM     SYS.INDEXES AS I left join 
+(select * from SYS.DM_DB_INDEX_USAGE_STATS 
+where
+OBJECTPROPERTY([OBJECT_ID],'IsUserTable') = 1
+AND database_id = db_id()) AS S 
+           ON I.[OBJECT_ID] = S.[OBJECT_ID] 
+              AND I.INDEX_ID = S.INDEX_ID 
+WHERE OBJECT_NAME(I.[OBJECT_ID]) = 'tblmessages'
+ORDER BY user_updates DESC

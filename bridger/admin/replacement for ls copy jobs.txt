@@ -1,0 +1,1 @@
+robocopy %1 \ls E:\LS *.trn /e /xo /xd %1lLS\DFSRPrivate /r:1 /W:1 /Log:LSSync.log

@@ -1,0 +1,8 @@
+select SUM( size_in_bytes )/1024/1024. [Cache Size in MB]
+from sys.dm_exec_cached_plans
+
+select refcounts, usecounts, 
+size_in_bytes/1000./1000. [Obj Plan Size in MB],
+objtype
+from sys.dm_exec_cached_plans
+order by size_in_bytes desc
