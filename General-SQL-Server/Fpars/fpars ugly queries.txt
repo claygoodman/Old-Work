@@ -1,0 +1,1253 @@
+
+        SELECT TOP 1000
+            a.app_name,
+            a.app_family,
+            b.log_type,
+            b.work_id,
+            b.log_datetime,
+            c.user_id,
+            b.partn_key,
+            b.log_info,
+            b.log_err_code,
+            b.log_err_desc
+        FROM  
+            applications a, log_table b, work_set c, USERS U
+        WHERE 
+            a.app_id = c.app_id AND
+            b.work_id = c.work_id AND
+            C.USER_ID = U.USER_ID
+    
+    --DONE
+  
+        SELECT 
+            ws.work_id,
+            ws.work_desc,
+            ws.work_crtd_dttm,
+            a.app_id,
+            a.app_name,
+            a.app_desc,
+            a.app_family,
+            a.app_type_code,
+            a.app_status,
+            a.app_crtd_dttm,
+            a.app_crtd_work_id,
+            a.app_upd_dttm,
+            a.app_upd_work_id,
+            a.app_ui_tool_type_code,
+            U.user_id,
+            U.user_username,
+            U.user_firstname,
+            U.user_lastname,
+            U.user_email,
+            U.user_phone,
+            U.user_status,
+            U.user_title,
+            '' as role_name
+        FROM 
+            work_set ws, applications a, users u
+        WHERE
+            ws.app_id = a.app_id AND
+            ws.user_id = u.user_id
+        ORDER BY 1
+
+--DONE
+
+        SELECT
+            CONVERT(VARCHAR, CAL_DATE, 101) AS CAL_DATE
+            ,fisc_season_desc
+            ,fisc_wk_of_mth
+            ,fisc_wk_of_season
+            ,fisc_wk_of_yr
+            ,CONVERT(VARCHAR, FISC_MTH_START_DT, 101) AS FISC_MTH_START_DT
+            ,CONVERT(VARCHAR, FISC_MTH_END_DT, 101) AS FISC_MTH_END_DT
+            ,CAL_DAYOF_MTH
+            ,CAL_DAYOF_YR
+            ,CONVERT(VARCHAR, FPARS_FISC_MTH_START_DT, 101) AS FPARS_FISC_MTH_START_DT
+            ,CONVERT(VARCHAR, FPARS_FISC_MTH_END_DT, 101) AS FPARS_FISC_MTH_END_DT
+            ,cal_id_yyyymmdd
+            ,cal_yyyyddd
+            ,cal_dt_yyyymm
+            ,cal_dayofwk_code
+            ,cal_dayofwk_abbrev
+            ,cal_dayofwk_desc
+            ,cal_wk_of_yr
+            ,cal_mth
+            ,cal_mth_abbrev
+            ,cal_mth_desc
+            ,cal_last_dy_of_mth_ind
+            ,cal_last_sat_of_mth_ind
+            ,cal_qtr_of_yr
+            ,cal_yr
+            ,cal_yr_end_ind
+            ,cal_last_sat_of_yr_ind
+            ,fisc_season_abbrev
+            ,fisc_no_weeks_in_yr
+            ,fisc_dt_yyyymm
+            ,cal_crtd_dttm
+            ,cal_crtd_work_id
+        FROM CALENDAR 
+        WHERE
+            CAL_DATE = #VALUE#
+
+--DONE
+
+        SELECT DISTINCT
+            ts.*        
+        FROM 
+            transaction_set ts
+            inner join work_set ws on ts.transet_crtd_work_id = ws.work_id
+            inner join users u on ws.user_id = u.user_id
+            inner join applications a on ws.app_id = a.app_id
+        WHERE
+            ts.transet_id > -10
+        ORDER BY 1
+DONE
+    
+        SELECT
+            L.LOC_ID
+            ,L.NMG_LOC_STORE_NO
+            ,L.BG_LOC_STORE_NO
+            ,C.COMPANY_NAME
+            ,L.NMG_COMPANY_CODE
+            ,L.FPARS_COMPANY_CODE
+            ,L.COMPANY_ID
+            ,L.LOC_LONG_DESC
+            ,L.LOC_SHORT_DESC
+            ,L.LOC_ADDRESS1
+            ,L.LOC_ADDRESS2
+            ,L.LOC_CITY
+            ,L.LOC_STATE_ABBREV
+            ,L.LOC_ZIPCODE
+            ,L.LOC_TRADEA_CODE
+            ,L.LOC_TRADEA_DESC
+            ,L.LOC_TYPE_CODE
+            ,L.LOC_TYPE_DESC
+            ,L.LOC_DIR_CODE
+            ,L.LOC_DIR_DESC
+            ,L.LOC_REGION_CODE
+            ,L.LOC_REGION_DESC
+            ,L.LOC_DFLT_SHIP_ACCT_NO
+            ,L.LOC_DFLT_SHIP_ACCT_ID
+            ,L.LOC_STATUS
+            ,L.LOC_CRTD_DTTM
+            ,L.LOC_CRTD_WORK_ID
+            ,L.LOC_UPD_DTTM
+            ,L.LOC_UPD_WORK_ID
+            ,L.LOC_COUNTIES_CSV
+            ,L.LOC_LATITUDE
+            ,L.LOC_LONGITUDE
+            ,L.LOC_FIPS_STATE_CODE
+            ,L.LOC_FIPS_COUNTY_CODE
+            ,L.LOC_MSA_CODE
+            ,L.LOC_MSA_CODE_DESC
+            ,L.LOC_TIME_ZONE_CODE
+            ,L.LOC_USES_DAYLT_SAV_IND
+        FROM LOCATIONS L 
+            INNER JOIN COMPANIES C ON L.COMPANY_ID = C.COMPANY_ID
+        WHERE
+            L.LOC_STATUS NOT IN ('D')
+
+DONE
+
+    
+        select app_id
+            ,app_name
+            ,app_desc
+            ,app_family
+            ,app_type_code
+            ,app_status
+            ,app_crtd_dttm
+            ,app_crtd_work_id
+            ,app_upd_dttm
+            ,app_upd_work_id 
+            ,app_ui_tool_type_code
+        from applications
+        where app_id > 0
+            and app_status not in ('D')
+        ORDER BY APP_TYPE_CODE
+
+
+DONE
+
+        SELECT APP_ID
+            ,AP.APP_PARAM_KEY
+            ,AP.APP_PARAM_VALUE
+            ,AP.APP_PARAM_COMMENT
+            ,AP.APP_PARAM_STATUS
+            ,AP.APP_PARAM_CRTD_DTTM
+            ,AP.APP_PARAM_CRTD_WORK_ID
+            ,AP.APP_PARAM_UPD_DTTM
+            ,AP.APP_PARAM_UPD_WORK_ID
+        FROM APP_PARAMETERS AP
+        WHERE APP_ID = #value#
+
+DONE
+    
+        SELECT R.ROLE_ID
+            ,R.ROLE_NAME
+            ,R.ROLE_DESC
+            ,R.ROLE_TYPE_CODE
+            ,R.ROLE_SENSATIVE_IND
+            ,R.ROLE_STATUS
+            ,R.ROLE_CRTD_DTTM
+            ,R.ROLE_CRTD_WORK_ID
+            ,R.ROLE_UPD_DTTM
+            ,R.ROLE_UPD_WORK_ID
+        FROM APP_ROLES AR
+            INNER JOIN ROLES R ON AR.ROLE_ID = R.ROLE_ID
+        WHERE
+            R.ROLE_ID > 0
+            AND AR.APP_ID= #value#
+DONE
+
+        Select U.user_id
+            ,U.user_username
+            ,U.user_firstname
+            ,U.user_lastname
+            ,U.user_email
+            ,U.user_phone
+            ,U.user_status
+            ,U.user_title
+            ,R.role_name
+        From users U
+             INNER JOIN USER_ROLES UR ON U.USER_ID = UR.USER_ID
+            INNER JOIN ROLES R ON UR.ROLE_ID = R.ROLE_ID
+        WHERE 
+            U.USER_STATUS NOT IN ('D')
+
+DONE
+
+        Select U.user_id
+            ,U.user_username
+            ,U.user_firstname
+            ,U.user_lastname
+            ,U.user_email
+            ,U.user_phone
+            ,U.user_status
+            ,U.user_title
+            ,R.role_name
+        From users U
+             INNER JOIN USER_ROLES UR ON U.USER_ID = UR.USER_ID
+            INNER JOIN ROLES R ON UR.ROLE_ID = R.ROLE_ID
+        Where U.user_username= #value#
+ 
+DONE
+   
+        SELECT R.*
+        FROM ROLES R 
+        WHERE R.ROLE_STATUS NOT IN ('D') 
+        AND R.ROLE_ID >= 0
+    
+        SELECT R.ROLE_NAME
+        FROM ROLES R 
+        WHERE R.ROLE_STATUS NOT IN ('D') 
+        AND R.ROLE_ID >= 0
+DONE
+
+        SELECT 
+            DB.company_id
+            ,DB.nmg_company_code
+            ,DB.fpars_company_code
+            ,DB.dept_id
+            ,DB.dept_code
+            ,DB.buyer_name
+            ,DB.deptbuyer_crtd_dttm
+            ,DB.deptbuyer_crtd_work_id
+        FROM 
+            DEPT_BUYERS DB
+        WHERE
+            DB.BUYER_NAME IS NOT NULL
+ 
+DONE   
+
+        Select DISTINCT DH.*
+        FROM DEPT_HEIRARCHY DH
+            LEFT JOIN DEPT_BUYERS DB ON DH.DEPT_ID = DB.DEPT_ID
+        WHERE DH.DEPT_STATUS NOT IN ('D')
+    
+DONE
+
+        Select DISTINCT POH.*
+        FROM PO_HEADERS POH
+            INNER JOIN PO_DETAILS PD ON POH.PARTN_KEY = PD.PARTN_KEY
+                    AND POH.PO_NUMBER = PD.PO_NUMBER
+        WHERE 1=1
+
+DONE
+    
+    SELECT
+            POD.partn_key
+            ,POD.po_number
+            ,POD.po_status
+            ,POD.company_id
+            ,POD.nmg_company_code
+            ,POD.fpars_company_code
+            ,POD.line_item_number
+            ,POD.item_desc
+            ,POD.qty_ordered
+            ,POD.units
+            ,POD.usd_cost_per_unit
+            ,POD.local_cost_per_unit
+            ,POD.expctd_recpt_date
+            ,POD.ship_date
+            ,POD.cancel_date
+            ,POD.qty_recvd
+            ,POD.qty_cancelled
+            ,POD.catalog_id
+            ,POD.vndr_style
+            ,POD.nmg_style
+            ,POD.inventory_desc
+            ,POD.color_desc
+            ,POD.size_desc
+            ,POD.manuf_ref_number
+            ,POD.manuf_weight_lbs
+            ,POD.manuf_length_inches
+            ,POD.manuf_width_inches
+            ,POD.manuf_height_inches
+            ,POD.comment
+            ,POD.GOH_recpt_routing
+            ,POD.distrib_cntr_control_number
+            ,POD.cntry_of_origin
+            ,POD.upc_code
+            ,POD.material_content
+            ,POD.dept_id
+            ,POD.dept_code
+            ,POD.perishable_code
+            ,POD.breakable_ind
+            ,POD.dunnage_ind
+            ,POD.vndr_packaging_ind
+            ,POD.reship_ind
+            ,POD.reship_container_ind
+            ,POD.podtl_rec_chcksum
+            ,POD.podtl_crtd_date
+            ,POD.podtl_crtd_work_id
+            ,POD.podtl_upd_date
+            ,POD.podtl_upd_work_id        
+        FROM PO_DETAILS POD
+        WHERE 1=1
+
+
+DONE
+
+        SELECT DISTINCT A.*
+            ,AX.acct_id    as ax_acct_id
+            ,AX.acct_number    as ax_acct_number
+            ,AX.acctxref_type_code    as ax_acctxref_type_code
+            ,AX.acctxref_subtype_code    as ax_acctxref_subtype_code
+            ,AX.acctxref_acct_number    as ax_acctxref_acct_number
+            ,AX.company_id    as ax_company_id
+            ,AX.nmg_company_code    as ax_nmg_company_code
+            ,AX.fpars_company_code    as ax_fpars_company_code
+            ,AX.acctxref_division_code    as ax_acctxref_division_code
+            ,AX.acctxref_dept_id    as ax_acctxref_dept_id
+            ,AX.acctxref_nmg_dept_code    as ax_acctxref_nmg_dept_code
+            ,AX.acctxref_location_id    as ax_acctxref_location_id
+            ,AX.acctxref_nmd_location_code    as ax_acctxref_nmd_location_code
+            ,AX.acctxref_warehouse    as ax_acctxref_warehouse
+            ,AX.acctxref_nmg_location_code    as ax_acctxref_nmg_location_code
+            ,AX.acctxref_expnse_center    as ax_acctxref_expnse_center
+            ,AX.acctxref_natl_division    as ax_acctxref_natl_division
+            ,AX.acctxref_subacct_code    as ax_acctxref_subacct_code
+            ,AX.acctxref_desc    as ax_acctxref_desc
+            ,AX.acctxref_status    as ax_acctxref_status
+            ,AX.acctxref_crtd_dttm    as ax_acctxref_crtd_dttm
+            ,AX.acctxref_crtd_work_id    as ax_acctxref_crtd_work_id
+            ,AX.acctxref_upd_dttm    as ax_acctxref_upd_dttm
+            ,AX.acctxref_upd_work_id    as ax_acctxref_upd_work_id
+        FROM ACCOUNTS A
+            LEFT JOIN ACCTS_XREF AX ON A.ACCT_ID = AX.ACCT_ID 
+        WHERE 
+            A.ACCT_STATUS NOT IN ('D')
+ 
+DONE
+   
+        SELECT 
+            AX.acct_id    as ax_acct_id
+            ,AX.acct_number    as ax_acct_number
+            ,AX.acctxref_type_code    as ax_acctxref_type_code
+            ,AX.acctxref_subtype_code    as ax_acctxref_subtype_code
+            ,AX.acctxref_acct_number    as ax_acctxref_acct_number
+            ,AX.company_id    as ax_company_id
+            ,AX.nmg_company_code    as ax_nmg_company_code
+            ,AX.fpars_company_code    as ax_fpars_company_code
+            ,AX.acctxref_division_code    as ax_acctxref_division_code
+            ,AX.acctxref_dept_id    as ax_acctxref_dept_id
+            ,AX.acctxref_nmg_dept_code    as ax_acctxref_nmg_dept_code
+            ,AX.acctxref_location_id    as ax_acctxref_location_id
+            ,AX.acctxref_nmd_location_code    as ax_acctxref_nmd_location_code
+            ,AX.acctxref_warehouse    as ax_acctxref_warehouse
+            ,AX.acctxref_nmg_location_code    as ax_acctxref_nmg_location_code
+            ,AX.acctxref_expnse_center    as ax_acctxref_expnse_center
+            ,AX.acctxref_natl_division    as ax_acctxref_natl_division
+            ,AX.acctxref_subacct_code    as ax_acctxref_subacct_code
+            ,AX.acctxref_desc    as ax_acctxref_desc
+            ,AX.acctxref_status    as ax_acctxref_status
+            ,AX.acctxref_crtd_dttm    as ax_acctxref_crtd_dttm
+            ,AX.acctxref_crtd_work_id    as ax_acctxref_crtd_work_id
+            ,AX.acctxref_upd_dttm    as ax_acctxref_upd_dttm
+            ,AX.acctxref_upd_work_id    as ax_acctxref_upd_work_id
+        FROM ACCTS_XREF AX
+        WHERE ACCT_ID IS NOT NULL
+
+DONE
+
+        SELECT 
+            DB.BUYER_NAME
+            ,DB.DEPTBUYER_CRTD_DTTM
+            ,DB.DEPTBUYER_CRTD_WORK_ID
+        FROM DEPT_BUYERS DB
+        WHERE DB.DEPT_ID = #value#
+    
+        SELECT TOP 1000 *
+        FROM ORDERS O
+        WHERE O.ORDER_STATUS NOT IN ('D')
+   DONE
+ 
+        SELECT *
+        FROM CARRIERS C
+        WHERE C.CARRIER_STATUS NOT IN ('D')
+    
+        SELECT *
+        FROM GP_UNITS G
+        WHERE GPUNITS_STATUS NOT IN ('D')
+    
+        SELECT *
+        FROM CATALOGS C
+        WHERE C.CATALOG_STATUS NOT IN ('D')
+    
+        SELECT *
+        FROM DISB_ACCTS
+        WHERE DISB_STATUS NOT IN ('D')
+    DONE
+        SELECT * FROM COMPANIES C WHERE company_status NOT IN ('D')
+            $value$
+        ORDER by C.fpars_company_code
+DONE
+        SELECT TOP 2000 IM.* 
+            ,D.PARTN_KEY             AS DISB_PARTN_KEY
+            ,D.INVOICE_ID             AS DISB_INVOICE_ID
+            ,D.INVOICE_ID_SRC         AS DISB_INVOICE_ID_SRC
+            ,D.INVDISB_SEQUENCE_NO    AS DISB_INVDISB_SEQUENCE_NO
+            ,D.INVDISB_ACCT_ID         AS DISB_INVDISB_ACCT_ID
+            ,D.INVDISB_ACCT_NO         AS DISB_INVDISB_ACCT_NO
+            ,D.INVDISB_CODE_LEGACY    AS DISB_INVDISB_CODE_LEGACY
+            ,D.INVDISB_CODE_TYPE    AS DISB_INVDISB_CODE_TYPE
+            ,D.INVDISB_AMT             AS DISB_INVDISB_AMT
+            ,D.COMPANY_ID             AS DISB_COMPANY_ID
+            ,D.NMG_COMPANY_CODE         AS DISB_NMG_COMPANY_CODE
+            ,D.FPARS_COMPANY_CODE    AS DISB_FPARS_COMPANY_CODE
+            ,D.DEPT_ID                 AS DISB_DEPT_ID
+            ,D.DEPT_CODE             AS DISB_DEPT_CODE
+            ,D.LOCATION_ID             AS DISB_LOCATION_ID
+            ,D.NMG_LOC_STORE_NO         AS DISB_NMG_LOC_STORE_NO
+            ,D.INVDISB_STATUS         AS DISB_INVDISB_STATUS
+            ,D.INVDISB_CRTD_DTTM    AS DISB_INVDISB_CRTD_DTTM
+            ,D.INVDISB_CRTD_WORK_ID    AS DISB_INVDISB_CRTD_WORK_ID
+            ,D.INVDISB_UPD_DTTM         AS DISB_INVDISB_UPD_DTTM
+            ,D.INVDISB_UPD_WORK_ID    AS DISB_INVDISB_UPD_WORK_ID
+            ,D.INVDISB_CHKSUM         AS DISB_INVDISB_CHKSUM
+        FROM INVOICE_MSTR IM
+            INNER JOIN INVOICE_DISTRIBUTIONS D ON IM.PARTN_KEY = D.PARTN_KEY
+                AND IM.INVOICE_ID = D.INVOICE_ID
+        WHERE IM.INVHDR_STATUS NOT IN ('D')
+
+DONE
+    
+        SELECT TOP 2000 IMQ.* 
+            ,DQ.PARTN_KEY             AS DISB_PARTN_KEY
+            ,DQ.INVOICE_ID             AS DISB_INVOICE_ID
+            ,DQ.INVOICE_ID_SRC         AS DISB_INVOICE_ID_SRC
+            ,DQ.INVDISB_SEQUENCE_NO    AS DISB_INVDISB_SEQUENCE_NO
+            ,DQ.INVDISB_ACCT_ID         AS DISB_INVDISB_ACCT_ID
+            ,DQ.INVDISB_ACCT_NO         AS DISB_INVDISB_ACCT_NO
+            ,DQ.INVDISB_CODE_LEGACY    AS DISB_INVDISB_CODE_LEGACY
+            ,DQ.INVDISB_CODE_TYPE    AS DISB_INVDISB_CODE_TYPE
+            ,DQ.INVDISB_AMT             AS DISB_INVDISB_AMT
+            ,DQ.COMPANY_ID             AS DISB_COMPANY_ID
+            ,DQ.NMG_COMPANY_CODE         AS DISB_NMG_COMPANY_CODE
+            ,DQ.FPARS_COMPANY_CODE    AS DISB_FPARS_COMPANY_CODE
+            ,DQ.DEPT_ID                 AS DISB_DEPT_ID
+            ,DQ.DEPT_CODE             AS DISB_DEPT_CODE
+            ,DQ.LOCATION_ID             AS DISB_LOCATION_ID
+            ,DQ.NMG_LOC_STORE_NO         AS DISB_NMG_LOC_STORE_NO
+            ,DQ.INVDISB_STATUS         AS DISB_INVDISB_STATUS
+            ,DQ.INVDISB_CRTD_DTTM    AS DISB_INVDISB_CRTD_DTTM
+            ,DQ.INVDISB_CRTD_WORK_ID    AS DISB_INVDISB_CRTD_WORK_ID
+            ,DQ.INVDISB_UPD_DTTM         AS DISB_INVDISB_UPD_DTTM
+            ,DQ.INVDISB_UPD_WORK_ID    AS DISB_INVDISB_UPD_WORK_ID
+            ,DQ.INVDISB_CHKSUM         AS DISB_INVDISB_CHKSUM
+		FROM invoice_mstr_$quarter0$ IMQ
+			INNER JOIN  invoice_distributions_$quarter0$ DQ
+				   ON  IMQ.PARTN_KEY  = DQ.PARTN_KEY
+				   AND IMQ.INVOICE_ID = DQ.INVOICE_ID
+			WHERE IMQ.INVHDR_STATUS NOT IN ('D')
+			    $value0$
+DONE
+        SELECT TOP 2000 IMQ$num1$.* 
+            ,DQ$num1$.PARTN_KEY             AS DISB_PARTN_KEY
+            ,DQ$num1$.INVOICE_ID             AS DISB_INVOICE_ID
+            ,DQ$num1$.INVOICE_ID_SRC         AS DISB_INVOICE_ID_SRC
+            ,DQ$num1$.INVDISB_SEQUENCE_NO    AS DISB_INVDISB_SEQUENCE_NO
+            ,DQ$num1$.INVDISB_ACCT_ID         AS DISB_INVDISB_ACCT_ID
+            ,DQ$num1$.INVDISB_ACCT_NO         AS DISB_INVDISB_ACCT_NO
+            ,DQ$num1$.INVDISB_CODE_LEGACY    AS DISB_INVDISB_CODE_LEGACY
+            ,DQ$num1$.INVDISB_CODE_TYPE    AS DISB_INVDISB_CODE_TYPE
+            ,DQ$num1$.INVDISB_AMT             AS DISB_INVDISB_AMT
+            ,DQ$num1$.COMPANY_ID             AS DISB_COMPANY_ID
+            ,DQ$num1$.NMG_COMPANY_CODE         AS DISB_NMG_COMPANY_CODE
+            ,DQ$num1$.FPARS_COMPANY_CODE    AS DISB_FPARS_COMPANY_CODE
+            ,DQ$num1$.DEPT_ID                 AS DISB_DEPT_ID
+            ,DQ$num1$.DEPT_CODE             AS DISB_DEPT_CODE
+            ,DQ$num1$.LOCATION_ID             AS DISB_LOCATION_ID
+            ,DQ$num1$.NMG_LOC_STORE_NO         AS DISB_NMG_LOC_STORE_NO
+            ,DQ$num1$.INVDISB_STATUS         AS DISB_INVDISB_STATUS
+            ,DQ$num1$.INVDISB_CRTD_DTTM    AS DISB_INVDISB_CRTD_DTTM
+            ,DQ$num1$.INVDISB_CRTD_WORK_ID    AS DISB_INVDISB_CRTD_WORK_ID
+            ,DQ$num1$.INVDISB_UPD_DTTM         AS DISB_INVDISB_UPD_DTTM
+            ,DQ$num1$.INVDISB_UPD_WORK_ID    AS DISB_INVDISB_UPD_WORK_ID
+            ,DQ$num1$.INVDISB_CHKSUM         AS DISB_INVDISB_CHKSUM
+		FROM invoice_mstr_$quarter1$ IMQ$num1$
+			INNER JOIN  invoice_distributions_$quarter1$ DQ$num1$
+				   ON  IMQ$num1$.PARTN_KEY  = DQ$num1$.PARTN_KEY
+				   AND IMQ$num1$.INVOICE_ID = DQ$num1$.INVOICE_ID
+			WHERE IMQ$num1$.INVHDR_STATUS NOT IN ('D')
+    DONE
+        SELECT TOP 2000 IMQ$num2$.* 
+            ,DQ$num2$.PARTN_KEY             AS DISB_PARTN_KEY
+            ,DQ$num2$.INVOICE_ID             AS DISB_INVOICE_ID
+            ,DQ$num2$.INVOICE_ID_SRC         AS DISB_INVOICE_ID_SRC
+            ,DQ$num2$.INVDISB_SEQUENCE_NO    AS DISB_INVDISB_SEQUENCE_NO
+            ,DQ$num2$.INVDISB_ACCT_ID         AS DISB_INVDISB_ACCT_ID
+            ,DQ$num2$.INVDISB_ACCT_NO         AS DISB_INVDISB_ACCT_NO
+            ,DQ$num2$.INVDISB_CODE_LEGACY    AS DISB_INVDISB_CODE_LEGACY
+            ,DQ$num2$.INVDISB_CODE_TYPE    AS DISB_INVDISB_CODE_TYPE
+            ,DQ$num2$.INVDISB_AMT             AS DISB_INVDISB_AMT
+            ,DQ$num2$.COMPANY_ID             AS DISB_COMPANY_ID
+            ,DQ$num2$.NMG_COMPANY_CODE         AS DISB_NMG_COMPANY_CODE
+            ,DQ$num2$.FPARS_COMPANY_CODE    AS DISB_FPARS_COMPANY_CODE
+            ,DQ$num2$.DEPT_ID                 AS DISB_DEPT_ID
+            ,DQ$num2$.DEPT_CODE             AS DISB_DEPT_CODE
+            ,DQ$num2$.LOCATION_ID             AS DISB_LOCATION_ID
+            ,DQ$num2$.NMG_LOC_STORE_NO         AS DISB_NMG_LOC_STORE_NO
+            ,DQ$num2$.INVDISB_STATUS         AS DISB_INVDISB_STATUS
+            ,DQ$num2$.INVDISB_CRTD_DTTM    AS DISB_INVDISB_CRTD_DTTM
+            ,DQ$num2$.INVDISB_CRTD_WORK_ID    AS DISB_INVDISB_CRTD_WORK_ID
+            ,DQ$num2$.INVDISB_UPD_DTTM         AS DISB_INVDISB_UPD_DTTM
+            ,DQ$num2$.INVDISB_UPD_WORK_ID    AS DISB_INVDISB_UPD_WORK_ID
+            ,DQ$num2$.INVDISB_CHKSUM         AS DISB_INVDISB_CHKSUM
+		FROM invoice_mstr_$quarter2$ IMQ$num2$
+			INNER JOIN  invoice_distributions_$quarter2$ DQ$num2$
+				   ON  IMQ$num2$.PARTN_KEY  = DQ$num2$.PARTN_KEY
+				   AND IMQ$num2$.INVOICE_ID = DQ$num2$.INVOICE_ID
+			WHERE IMQ$num2$.INVHDR_STATUS NOT IN ('D')
+
+DONE
+        SELECT TOP 2000 IMQ$num3$.* 
+            ,DQ$num3$.PARTN_KEY             AS DISB_PARTN_KEY
+            ,DQ$num3$.INVOICE_ID             AS DISB_INVOICE_ID
+            ,DQ$num3$.INVOICE_ID_SRC         AS DISB_INVOICE_ID_SRC
+            ,DQ$num3$.INVDISB_SEQUENCE_NO    AS DISB_INVDISB_SEQUENCE_NO
+            ,DQ$num3$.INVDISB_ACCT_ID         AS DISB_INVDISB_ACCT_ID
+            ,DQ$num3$.INVDISB_ACCT_NO         AS DISB_INVDISB_ACCT_NO
+            ,DQ$num3$.INVDISB_CODE_LEGACY    AS DISB_INVDISB_CODE_LEGACY
+            ,DQ$num3$.INVDISB_CODE_TYPE    AS DISB_INVDISB_CODE_TYPE
+            ,DQ$num3$.INVDISB_AMT             AS DISB_INVDISB_AMT
+            ,DQ$num3$.COMPANY_ID             AS DISB_COMPANY_ID
+            ,DQ$num3$.NMG_COMPANY_CODE         AS DISB_NMG_COMPANY_CODE
+            ,DQ$num3$.FPARS_COMPANY_CODE    AS DISB_FPARS_COMPANY_CODE
+            ,DQ$num3$.DEPT_ID                 AS DISB_DEPT_ID
+            ,DQ$num3$.DEPT_CODE             AS DISB_DEPT_CODE
+            ,DQ$num3$.LOCATION_ID             AS DISB_LOCATION_ID
+            ,DQ$num3$.NMG_LOC_STORE_NO         AS DISB_NMG_LOC_STORE_NO
+            ,DQ$num3$.INVDISB_STATUS         AS DISB_INVDISB_STATUS
+            ,DQ$num3$.INVDISB_CRTD_DTTM    AS DISB_INVDISB_CRTD_DTTM
+            ,DQ$num3$.INVDISB_CRTD_WORK_ID    AS DISB_INVDISB_CRTD_WORK_ID
+            ,DQ$num3$.INVDISB_UPD_DTTM         AS DISB_INVDISB_UPD_DTTM
+            ,DQ$num3$.INVDISB_UPD_WORK_ID    AS DISB_INVDISB_UPD_WORK_ID
+            ,DQ$num3$.INVDISB_CHKSUM         AS DISB_INVDISB_CHKSUM
+		FROM invoice_mstr_$quarter3$ IMQ$num3$
+			INNER JOIN  invoice_distributions_$quarter3$ DQ$num3$
+				   ON  IMQ$num3$.PARTN_KEY  = DQ$num3$.PARTN_KEY
+				   AND IMQ$num3$.INVOICE_ID = DQ$num3$.INVOICE_ID
+			WHERE IMQ$num3$.INVHDR_STATUS NOT IN ('D')
+
+DONE
+        SELECT TOP 2000 IMQ$num4$.* 
+            ,DQ$num4$.PARTN_KEY             AS DISB_PARTN_KEY
+            ,DQ$num4$.INVOICE_ID             AS DISB_INVOICE_ID
+            ,DQ$num4$.INVOICE_ID_SRC         AS DISB_INVOICE_ID_SRC
+            ,DQ$num4$.INVDISB_SEQUENCE_NO    AS DISB_INVDISB_SEQUENCE_NO
+            ,DQ$num4$.INVDISB_ACCT_ID         AS DISB_INVDISB_ACCT_ID
+            ,DQ$num4$.INVDISB_ACCT_NO         AS DISB_INVDISB_ACCT_NO
+            ,DQ$num4$.INVDISB_CODE_LEGACY    AS DISB_INVDISB_CODE_LEGACY
+            ,DQ$num4$.INVDISB_CODE_TYPE    AS DISB_INVDISB_CODE_TYPE
+            ,DQ$num4$.INVDISB_AMT             AS DISB_INVDISB_AMT
+            ,DQ$num4$.COMPANY_ID             AS DISB_COMPANY_ID
+            ,DQ$num4$.NMG_COMPANY_CODE         AS DISB_NMG_COMPANY_CODE
+            ,DQ$num4$.FPARS_COMPANY_CODE    AS DISB_FPARS_COMPANY_CODE
+            ,DQ$num4$.DEPT_ID                 AS DISB_DEPT_ID
+            ,DQ$num4$.DEPT_CODE             AS DISB_DEPT_CODE
+            ,DQ$num4$.LOCATION_ID             AS DISB_LOCATION_ID
+            ,DQ$num4$.NMG_LOC_STORE_NO         AS DISB_NMG_LOC_STORE_NO
+            ,DQ$num4$.INVDISB_STATUS         AS DISB_INVDISB_STATUS
+            ,DQ$num4$.INVDISB_CRTD_DTTM    AS DISB_INVDISB_CRTD_DTTM
+            ,DQ$num4$.INVDISB_CRTD_WORK_ID    AS DISB_INVDISB_CRTD_WORK_ID
+            ,DQ$num4$.INVDISB_UPD_DTTM         AS DISB_INVDISB_UPD_DTTM
+            ,DQ$num4$.INVDISB_UPD_WORK_ID    AS DISB_INVDISB_UPD_WORK_ID
+            ,DQ$num4$.INVDISB_CHKSUM         AS DISB_INVDISB_CHKSUM
+		FROM invoice_mstr_$quarter4$ IMQ$num4$
+			INNER JOIN  invoice_distributions_$quarter4$ DQ$num4$
+				   ON  IMQ$num4$.PARTN_KEY  = DQ$num4$.PARTN_KEY
+				   AND IMQ$num4$.INVOICE_ID = DQ$num4$.INVOICE_ID
+			WHERE IMQ$num4$.INVHDR_STATUS NOT IN ('D')
+
+DONE
+        SELECT TOP 2000 IMQ$num5$.* 
+            ,DQ$num5$.PARTN_KEY             AS DISB_PARTN_KEY
+            ,DQ$num5$.INVOICE_ID             AS DISB_INVOICE_ID
+            ,DQ$num5$.INVOICE_ID_SRC         AS DISB_INVOICE_ID_SRC
+            ,DQ$num5$.INVDISB_SEQUENCE_NO    AS DISB_INVDISB_SEQUENCE_NO
+            ,DQ$num5$.INVDISB_ACCT_ID         AS DISB_INVDISB_ACCT_ID
+            ,DQ$num5$.INVDISB_ACCT_NO         AS DISB_INVDISB_ACCT_NO
+            ,DQ$num5$.INVDISB_CODE_LEGACY    AS DISB_INVDISB_CODE_LEGACY
+            ,DQ$num5$.INVDISB_CODE_TYPE    AS DISB_INVDISB_CODE_TYPE
+            ,DQ$num5$.INVDISB_AMT             AS DISB_INVDISB_AMT
+            ,DQ$num5$.COMPANY_ID             AS DISB_COMPANY_ID
+            ,DQ$num5$.NMG_COMPANY_CODE         AS DISB_NMG_COMPANY_CODE
+            ,DQ$num5$.FPARS_COMPANY_CODE    AS DISB_FPARS_COMPANY_CODE
+            ,DQ$num5$.DEPT_ID                 AS DISB_DEPT_ID
+            ,DQ$num5$.DEPT_CODE             AS DISB_DEPT_CODE
+            ,DQ$num5$.LOCATION_ID             AS DISB_LOCATION_ID
+            ,DQ$num5$.NMG_LOC_STORE_NO         AS DISB_NMG_LOC_STORE_NO
+            ,DQ$num5$.INVDISB_STATUS         AS DISB_INVDISB_STATUS
+            ,DQ$num5$.INVDISB_CRTD_DTTM    AS DISB_INVDISB_CRTD_DTTM
+            ,DQ$num5$.INVDISB_CRTD_WORK_ID    AS DISB_INVDISB_CRTD_WORK_ID
+            ,DQ$num5$.INVDISB_UPD_DTTM         AS DISB_INVDISB_UPD_DTTM
+            ,DQ$num5$.INVDISB_UPD_WORK_ID    AS DISB_INVDISB_UPD_WORK_ID
+            ,DQ$num5$.INVDISB_CHKSUM         AS DISB_INVDISB_CHKSUM
+		FROM invoice_mstr_$quarter5$ IMQ$num5$
+			INNER JOIN  invoice_distributions_$quarter5$ DQ$num5$
+				   ON  IMQ$num5$.PARTN_KEY  = DQ$num5$.PARTN_KEY
+				   AND IMQ$num5$.INVOICE_ID = DQ$num5$.INVOICE_ID
+			WHERE IMQ$num5$.INVHDR_STATUS NOT IN ('D')
+
+DONE
+
+        SELECT TOP 2000 IMQ$num6$.* 
+            ,DQ$num6$.PARTN_KEY             AS DISB_PARTN_KEY
+            ,DQ$num6$.INVOICE_ID             AS DISB_INVOICE_ID
+            ,DQ$num6$.INVOICE_ID_SRC         AS DISB_INVOICE_ID_SRC
+            ,DQ$num6$.INVDISB_SEQUENCE_NO    AS DISB_INVDISB_SEQUENCE_NO
+            ,DQ$num6$.INVDISB_ACCT_ID         AS DISB_INVDISB_ACCT_ID
+            ,DQ$num6$.INVDISB_ACCT_NO         AS DISB_INVDISB_ACCT_NO
+            ,DQ$num6$.INVDISB_CODE_LEGACY    AS DISB_INVDISB_CODE_LEGACY
+            ,DQ$num6$.INVDISB_CODE_TYPE    AS DISB_INVDISB_CODE_TYPE
+            ,DQ$num6$.INVDISB_AMT             AS DISB_INVDISB_AMT
+            ,DQ$num6$.COMPANY_ID             AS DISB_COMPANY_ID
+            ,DQ$num6$.NMG_COMPANY_CODE         AS DISB_NMG_COMPANY_CODE
+            ,DQ$num6$.FPARS_COMPANY_CODE    AS DISB_FPARS_COMPANY_CODE
+            ,DQ$num6$.DEPT_ID                 AS DISB_DEPT_ID
+            ,DQ$num6$.DEPT_CODE             AS DISB_DEPT_CODE
+            ,DQ$num6$.LOCATION_ID             AS DISB_LOCATION_ID
+            ,DQ$num6$.NMG_LOC_STORE_NO         AS DISB_NMG_LOC_STORE_NO
+            ,DQ$num6$.INVDISB_STATUS         AS DISB_INVDISB_STATUS
+            ,DQ$num6$.INVDISB_CRTD_DTTM    AS DISB_INVDISB_CRTD_DTTM
+            ,DQ$num6$.INVDISB_CRTD_WORK_ID    AS DISB_INVDISB_CRTD_WORK_ID
+            ,DQ$num6$.INVDISB_UPD_DTTM         AS DISB_INVDISB_UPD_DTTM
+            ,DQ$num6$.INVDISB_UPD_WORK_ID    AS DISB_INVDISB_UPD_WORK_ID
+            ,DQ$num6$.INVDISB_CHKSUM         AS DISB_INVDISB_CHKSUM
+		FROM invoice_mstr_$quarter6$ IMQ$num6$
+			INNER JOIN  invoice_distributions_$quarter6$ DQ$num6$
+				   ON  IMQ$num6$.PARTN_KEY  = DQ$num6$.PARTN_KEY
+				   AND IMQ$num6$.INVOICE_ID = DQ$num6$.INVOICE_ID
+			WHERE IMQ$num6$.INVHDR_STATUS NOT IN ('D')
+
+
+done
+        SELECT TOP 2000 IMQ$num7$.* 
+            ,DQ$num7$.PARTN_KEY             AS DISB_PARTN_KEY
+            ,DQ$num7$.INVOICE_ID             AS DISB_INVOICE_ID
+            ,DQ$num7$.INVOICE_ID_SRC         AS DISB_INVOICE_ID_SRC
+            ,DQ$num7$.INVDISB_SEQUENCE_NO    AS DISB_INVDISB_SEQUENCE_NO
+            ,DQ$num7$.INVDISB_ACCT_ID         AS DISB_INVDISB_ACCT_ID
+            ,DQ$num7$.INVDISB_ACCT_NO         AS DISB_INVDISB_ACCT_NO
+            ,DQ$num7$.INVDISB_CODE_LEGACY    AS DISB_INVDISB_CODE_LEGACY
+            ,DQ$num7$.INVDISB_CODE_TYPE    AS DISB_INVDISB_CODE_TYPE
+            ,DQ$num7$.INVDISB_AMT             AS DISB_INVDISB_AMT
+            ,DQ$num7$.COMPANY_ID             AS DISB_COMPANY_ID
+            ,DQ$num7$.NMG_COMPANY_CODE         AS DISB_NMG_COMPANY_CODE
+            ,DQ$num7$.FPARS_COMPANY_CODE    AS DISB_FPARS_COMPANY_CODE
+            ,DQ$num7$.DEPT_ID                 AS DISB_DEPT_ID
+            ,DQ$num7$.DEPT_CODE             AS DISB_DEPT_CODE
+            ,DQ$num7$.LOCATION_ID             AS DISB_LOCATION_ID
+            ,DQ$num7$.NMG_LOC_STORE_NO         AS DISB_NMG_LOC_STORE_NO
+            ,DQ$num7$.INVDISB_STATUS         AS DISB_INVDISB_STATUS
+            ,DQ$num7$.INVDISB_CRTD_DTTM    AS DISB_INVDISB_CRTD_DTTM
+            ,DQ$num7$.INVDISB_CRTD_WORK_ID    AS DISB_INVDISB_CRTD_WORK_ID
+            ,DQ$num7$.INVDISB_UPD_DTTM         AS DISB_INVDISB_UPD_DTTM
+            ,DQ$num7$.INVDISB_UPD_WORK_ID    AS DISB_INVDISB_UPD_WORK_ID
+            ,DQ$num7$.INVDISB_CHKSUM         AS DISB_INVDISB_CHKSUM
+		FROM invoice_mstr_$quarter7$ IMQ$num7$
+			INNER JOIN  invoice_distributions_$quarter7$ DQ$num7$
+				   ON  IMQ$num7$.PARTN_KEY  = DQ$num7$.PARTN_KEY
+				   AND IMQ$num7$.INVOICE_ID = DQ$num7$.INVOICE_ID
+			WHERE IMQ$num7$.INVHDR_STATUS NOT IN ('D')
+
+done
+
+        SELECT TOP 2000 IMQ$num8$.* 
+            ,DQ$num8$.PARTN_KEY             AS DISB_PARTN_KEY
+            ,DQ$num8$.INVOICE_ID             AS DISB_INVOICE_ID
+            ,DQ$num8$.INVOICE_ID_SRC         AS DISB_INVOICE_ID_SRC
+            ,DQ$num8$.INVDISB_SEQUENCE_NO    AS DISB_INVDISB_SEQUENCE_NO
+            ,DQ$num8$.INVDISB_ACCT_ID         AS DISB_INVDISB_ACCT_ID
+            ,DQ$num8$.INVDISB_ACCT_NO         AS DISB_INVDISB_ACCT_NO
+            ,DQ$num8$.INVDISB_CODE_LEGACY    AS DISB_INVDISB_CODE_LEGACY
+            ,DQ$num8$.INVDISB_CODE_TYPE    AS DISB_INVDISB_CODE_TYPE
+            ,DQ$num8$.INVDISB_AMT             AS DISB_INVDISB_AMT
+            ,DQ$num8$.COMPANY_ID             AS DISB_COMPANY_ID
+            ,DQ$num8$.NMG_COMPANY_CODE         AS DISB_NMG_COMPANY_CODE
+            ,DQ$num8$.FPARS_COMPANY_CODE    AS DISB_FPARS_COMPANY_CODE
+            ,DQ$num8$.DEPT_ID                 AS DISB_DEPT_ID
+            ,DQ$num8$.DEPT_CODE             AS DISB_DEPT_CODE
+            ,DQ$num8$.LOCATION_ID             AS DISB_LOCATION_ID
+            ,DQ$num8$.NMG_LOC_STORE_NO         AS DISB_NMG_LOC_STORE_NO
+            ,DQ$num8$.INVDISB_STATUS         AS DISB_INVDISB_STATUS
+            ,DQ$num8$.INVDISB_CRTD_DTTM    AS DISB_INVDISB_CRTD_DTTM
+            ,DQ$num8$.INVDISB_CRTD_WORK_ID    AS DISB_INVDISB_CRTD_WORK_ID
+            ,DQ$num8$.INVDISB_UPD_DTTM         AS DISB_INVDISB_UPD_DTTM
+            ,DQ$num8$.INVDISB_UPD_WORK_ID    AS DISB_INVDISB_UPD_WORK_ID
+            ,DQ$num8$.INVDISB_CHKSUM         AS DISB_INVDISB_CHKSUM
+		FROM invoice_mstr_$quarter8$ IMQ$num8$
+			INNER JOIN  invoice_distributions_$quarter8$ DQ$num8$
+				   ON  IMQ$num8$.PARTN_KEY  = DQ$num8$.PARTN_KEY
+				   AND IMQ$num8$.INVOICE_ID = DQ$num8$.INVOICE_ID
+			WHERE IMQ$num8$.INVHDR_STATUS NOT IN ('D')
+
+done
+
+        SELECT TOP 2000 IMQ$num9$.* 
+            ,DQ$num9$.PARTN_KEY             AS DISB_PARTN_KEY
+            ,DQ$num9$.INVOICE_ID             AS DISB_INVOICE_ID
+            ,DQ$num9$.INVOICE_ID_SRC         AS DISB_INVOICE_ID_SRC
+            ,DQ$num9$.INVDISB_SEQUENCE_NO    AS DISB_INVDISB_SEQUENCE_NO
+            ,DQ$num9$.INVDISB_ACCT_ID         AS DISB_INVDISB_ACCT_ID
+            ,DQ$num9$.INVDISB_ACCT_NO         AS DISB_INVDISB_ACCT_NO
+            ,DQ$num9$.INVDISB_CODE_LEGACY    AS DISB_INVDISB_CODE_LEGACY
+            ,DQ$num9$.INVDISB_CODE_TYPE    AS DISB_INVDISB_CODE_TYPE
+            ,DQ$num9$.INVDISB_AMT             AS DISB_INVDISB_AMT
+            ,DQ$num9$.COMPANY_ID             AS DISB_COMPANY_ID
+            ,DQ$num9$.NMG_COMPANY_CODE         AS DISB_NMG_COMPANY_CODE
+            ,DQ$num9$.FPARS_COMPANY_CODE    AS DISB_FPARS_COMPANY_CODE
+            ,DQ$num9$.DEPT_ID                 AS DISB_DEPT_ID
+            ,DQ$num9$.DEPT_CODE             AS DISB_DEPT_CODE
+            ,DQ$num9$.LOCATION_ID             AS DISB_LOCATION_ID
+            ,DQ$num9$.NMG_LOC_STORE_NO         AS DISB_NMG_LOC_STORE_NO
+            ,DQ$num9$.INVDISB_STATUS         AS DISB_INVDISB_STATUS
+            ,DQ$num9$.INVDISB_CRTD_DTTM    AS DISB_INVDISB_CRTD_DTTM
+            ,DQ$num9$.INVDISB_CRTD_WORK_ID    AS DISB_INVDISB_CRTD_WORK_ID
+            ,DQ$num9$.INVDISB_UPD_DTTM         AS DISB_INVDISB_UPD_DTTM
+            ,DQ$num9$.INVDISB_UPD_WORK_ID    AS DISB_INVDISB_UPD_WORK_ID
+            ,DQ$num9$.INVDISB_CHKSUM         AS DISB_INVDISB_CHKSUM
+		FROM invoice_mstr_$quarter9$ IMQ$num9$
+			INNER JOIN  invoice_distributions_$quarter9$ DQ$num9$
+				   ON  IMQ$num9$.PARTN_KEY  = DQ$num9$.PARTN_KEY
+				   AND IMQ$num9$.INVOICE_ID = DQ$num9$.INVOICE_ID
+			WHERE IMQ$num9$.INVHDR_STATUS NOT IN ('D')
+
+done
+        SELECT TOP 2000 IMQ$num10$.* 
+            ,DQ$num10$.PARTN_KEY             AS DISB_PARTN_KEY
+            ,DQ$num10$.INVOICE_ID             AS DISB_INVOICE_ID
+            ,DQ$num10$.INVOICE_ID_SRC         AS DISB_INVOICE_ID_SRC
+            ,DQ$num10$.INVDISB_SEQUENCE_NO    AS DISB_INVDISB_SEQUENCE_NO
+            ,DQ$num10$.INVDISB_ACCT_ID         AS DISB_INVDISB_ACCT_ID
+            ,DQ$num10$.INVDISB_ACCT_NO         AS DISB_INVDISB_ACCT_NO
+            ,DQ$num10$.INVDISB_CODE_LEGACY    AS DISB_INVDISB_CODE_LEGACY
+            ,DQ$num10$.INVDISB_CODE_TYPE    AS DISB_INVDISB_CODE_TYPE
+            ,DQ$num10$.INVDISB_AMT             AS DISB_INVDISB_AMT
+            ,DQ$num10$.COMPANY_ID             AS DISB_COMPANY_ID
+            ,DQ$num10$.NMG_COMPANY_CODE         AS DISB_NMG_COMPANY_CODE
+            ,DQ$num10$.FPARS_COMPANY_CODE    AS DISB_FPARS_COMPANY_CODE
+            ,DQ$num10$.DEPT_ID                 AS DISB_DEPT_ID
+            ,DQ$num10$.DEPT_CODE             AS DISB_DEPT_CODE
+            ,DQ$num10$.LOCATION_ID             AS DISB_LOCATION_ID
+            ,DQ$num10$.NMG_LOC_STORE_NO         AS DISB_NMG_LOC_STORE_NO
+            ,DQ$num10$.INVDISB_STATUS         AS DISB_INVDISB_STATUS
+            ,DQ$num10$.INVDISB_CRTD_DTTM    AS DISB_INVDISB_CRTD_DTTM
+            ,DQ$num10$.INVDISB_CRTD_WORK_ID    AS DISB_INVDISB_CRTD_WORK_ID
+            ,DQ$num10$.INVDISB_UPD_DTTM         AS DISB_INVDISB_UPD_DTTM
+            ,DQ$num10$.INVDISB_UPD_WORK_ID    AS DISB_INVDISB_UPD_WORK_ID
+            ,DQ$num10$.INVDISB_CHKSUM         AS DISB_INVDISB_CHKSUM
+		FROM invoice_mstr_$quarter10$ IMQ$num10$
+			INNER JOIN  invoice_distributions_$quarter10$ DQ$num10$
+				   ON  IMQ$num10$.PARTN_KEY  = DQ$num10$.PARTN_KEY
+				   AND IMQ$num10$.INVOICE_ID = DQ$num10$.INVOICE_ID
+			WHERE IMQ$num10$.INVHDR_STATUS NOT IN ('D')
+
+
+Done
+        SELECT TOP 2000 IMQ$num11$.* 
+            ,DQ$num11$.PARTN_KEY             AS DISB_PARTN_KEY
+            ,DQ$num11$.INVOICE_ID             AS DISB_INVOICE_ID
+            ,DQ$num11$.INVOICE_ID_SRC         AS DISB_INVOICE_ID_SRC
+            ,DQ$num11$.INVDISB_SEQUENCE_NO    AS DISB_INVDISB_SEQUENCE_NO
+            ,DQ$num11$.INVDISB_ACCT_ID         AS DISB_INVDISB_ACCT_ID
+            ,DQ$num11$.INVDISB_ACCT_NO         AS DISB_INVDISB_ACCT_NO
+            ,DQ$num11$.INVDISB_CODE_LEGACY    AS DISB_INVDISB_CODE_LEGACY
+            ,DQ$num11$.INVDISB_CODE_TYPE    AS DISB_INVDISB_CODE_TYPE
+            ,DQ$num11$.INVDISB_AMT             AS DISB_INVDISB_AMT
+            ,DQ$num11$.COMPANY_ID             AS DISB_COMPANY_ID
+            ,DQ$num11$.NMG_COMPANY_CODE         AS DISB_NMG_COMPANY_CODE
+            ,DQ$num11$.FPARS_COMPANY_CODE    AS DISB_FPARS_COMPANY_CODE
+            ,DQ$num11$.DEPT_ID                 AS DISB_DEPT_ID
+            ,DQ$num11$.DEPT_CODE             AS DISB_DEPT_CODE
+            ,DQ$num11$.LOCATION_ID             AS DISB_LOCATION_ID
+            ,DQ$num11$.NMG_LOC_STORE_NO         AS DISB_NMG_LOC_STORE_NO
+            ,DQ$num11$.INVDISB_STATUS         AS DISB_INVDISB_STATUS
+            ,DQ$num11$.INVDISB_CRTD_DTTM    AS DISB_INVDISB_CRTD_DTTM
+            ,DQ$num11$.INVDISB_CRTD_WORK_ID    AS DISB_INVDISB_CRTD_WORK_ID
+            ,DQ$num11$.INVDISB_UPD_DTTM         AS DISB_INVDISB_UPD_DTTM
+            ,DQ$num11$.INVDISB_UPD_WORK_ID    AS DISB_INVDISB_UPD_WORK_ID
+            ,DQ$num11$.INVDISB_CHKSUM         AS DISB_INVDISB_CHKSUM
+		FROM invoice_mstr_$quarter11$ IMQ$num11$
+			INNER JOIN  invoice_distributions_$quarter11$ DQ$num11$
+				   ON  IMQ$num11$.PARTN_KEY  = DQ$num11$.PARTN_KEY
+				   AND IMQ$num11$.INVOICE_ID = DQ$num11$.INVOICE_ID
+			WHERE IMQ$num11$.INVHDR_STATUS NOT IN ('D')
+
+done
+
+        SELECT TOP 2000 IMQ$num12$.* 
+            ,DQ$num12$.PARTN_KEY             AS DISB_PARTN_KEY
+            ,DQ$num12$.INVOICE_ID             AS DISB_INVOICE_ID
+            ,DQ$num12$.INVOICE_ID_SRC         AS DISB_INVOICE_ID_SRC
+            ,DQ$num12$.INVDISB_SEQUENCE_NO    AS DISB_INVDISB_SEQUENCE_NO
+            ,DQ$num12$.INVDISB_ACCT_ID         AS DISB_INVDISB_ACCT_ID
+            ,DQ$num12$.INVDISB_ACCT_NO         AS DISB_INVDISB_ACCT_NO
+            ,DQ$num12$.INVDISB_CODE_LEGACY    AS DISB_INVDISB_CODE_LEGACY
+            ,DQ$num12$.INVDISB_CODE_TYPE    AS DISB_INVDISB_CODE_TYPE
+            ,DQ$num12$.INVDISB_AMT             AS DISB_INVDISB_AMT
+            ,DQ$num12$.COMPANY_ID             AS DISB_COMPANY_ID
+            ,DQ$num12$.NMG_COMPANY_CODE         AS DISB_NMG_COMPANY_CODE
+            ,DQ$num12$.FPARS_COMPANY_CODE    AS DISB_FPARS_COMPANY_CODE
+            ,DQ$num12$.DEPT_ID                 AS DISB_DEPT_ID
+            ,DQ$num12$.DEPT_CODE             AS DISB_DEPT_CODE
+            ,DQ$num12$.LOCATION_ID             AS DISB_LOCATION_ID
+            ,DQ$num12$.NMG_LOC_STORE_NO         AS DISB_NMG_LOC_STORE_NO
+            ,DQ$num12$.INVDISB_STATUS         AS DISB_INVDISB_STATUS
+            ,DQ$num12$.INVDISB_CRTD_DTTM    AS DISB_INVDISB_CRTD_DTTM
+            ,DQ$num12$.INVDISB_CRTD_WORK_ID    AS DISB_INVDISB_CRTD_WORK_ID
+            ,DQ$num12$.INVDISB_UPD_DTTM         AS DISB_INVDISB_UPD_DTTM
+            ,DQ$num12$.INVDISB_UPD_WORK_ID    AS DISB_INVDISB_UPD_WORK_ID
+            ,DQ$num12$.INVDISB_CHKSUM         AS DISB_INVDISB_CHKSUM
+		FROM invoice_mstr_$quarter12$ IMQ$num12$
+			INNER JOIN  invoice_distributions_$quarter12$ DQ$num12$
+				   ON  IMQ$num12$.PARTN_KEY  = DQ$num12$.PARTN_KEY
+				   AND IMQ$num12$.INVOICE_ID = DQ$num12$.INVOICE_ID
+			WHERE IMQ$num12$.INVHDR_STATUS NOT IN ('D')
+done
+
+        SELECT TOP 2000 IMQ$num13$.* 
+            ,DQ$num13$.PARTN_KEY             AS DISB_PARTN_KEY
+            ,DQ$num13$.INVOICE_ID             AS DISB_INVOICE_ID
+            ,DQ$num13$.INVOICE_ID_SRC         AS DISB_INVOICE_ID_SRC
+            ,DQ$num13$.INVDISB_SEQUENCE_NO    AS DISB_INVDISB_SEQUENCE_NO
+            ,DQ$num13$.INVDISB_ACCT_ID         AS DISB_INVDISB_ACCT_ID
+            ,DQ$num13$.INVDISB_ACCT_NO         AS DISB_INVDISB_ACCT_NO
+            ,DQ$num13$.INVDISB_CODE_LEGACY    AS DISB_INVDISB_CODE_LEGACY
+            ,DQ$num13$.INVDISB_CODE_TYPE    AS DISB_INVDISB_CODE_TYPE
+            ,DQ$num13$.INVDISB_AMT             AS DISB_INVDISB_AMT
+            ,DQ$num13$.COMPANY_ID             AS DISB_COMPANY_ID
+            ,DQ$num13$.NMG_COMPANY_CODE         AS DISB_NMG_COMPANY_CODE
+            ,DQ$num13$.FPARS_COMPANY_CODE    AS DISB_FPARS_COMPANY_CODE
+            ,DQ$num13$.DEPT_ID                 AS DISB_DEPT_ID
+            ,DQ$num13$.DEPT_CODE             AS DISB_DEPT_CODE
+            ,DQ$num13$.LOCATION_ID             AS DISB_LOCATION_ID
+            ,DQ$num13$.NMG_LOC_STORE_NO         AS DISB_NMG_LOC_STORE_NO
+            ,DQ$num13$.INVDISB_STATUS         AS DISB_INVDISB_STATUS
+            ,DQ$num13$.INVDISB_CRTD_DTTM    AS DISB_INVDISB_CRTD_DTTM
+            ,DQ$num13$.INVDISB_CRTD_WORK_ID    AS DISB_INVDISB_CRTD_WORK_ID
+            ,DQ$num13$.INVDISB_UPD_DTTM         AS DISB_INVDISB_UPD_DTTM
+            ,DQ$num13$.INVDISB_UPD_WORK_ID    AS DISB_INVDISB_UPD_WORK_ID
+            ,DQ$num13$.INVDISB_CHKSUM         AS DISB_INVDISB_CHKSUM
+		FROM invoice_mstr_$quarter13$ IMQ$num13$
+			INNER JOIN  invoice_distributions_$quarter13$ DQ$num13$
+				   ON  IMQ$num13$.PARTN_KEY  = DQ$num13$.PARTN_KEY
+				   AND IMQ$num13$.INVOICE_ID = DQ$num13$.INVOICE_ID
+			WHERE IMQ$num13$.INVHDR_STATUS NOT IN ('D')
+
+
+DONE
+        SELECT * FROM INVOICE_DTLS ID
+        WHERE ID.INVDTL_STATUS NOT IN ('D')
+
+
+        SELECT * FROM INVOICE_DISTRIBUTIONS D
+        WHERE D.INVDISB_STATUS NOT IN ('D')
+
+done
+        SELECT TOP 2000 * 
+            ,c.fisc_dt_yyyymm as crtd_fiscal_yyyymm
+            ,substring(convert(varchar, c.fisc_dt_yyyymm),1,4) + convert(varchar, c.fisc_wk_of_yr) as crtd_fiscal_yyyyww
+        FROM fpars.dbo.invoice_transactions T, calendar c
+        WHERE T.trans_status NOT IN ('D')
+            AND substring(convert(varchar, t.TRANS_CRTD_DTTM,112),1,8) = substring(convert(varchar, C.CAL_DATE,112),1,8)
+
+done as hopeless
+        SELECT * 
+        FROM CHANGE_HISTORY 
+        WHERE 1=1
+        ORDER by chg_datetime asc
+
+done
+        SELECT EF.* FROM EDI_FILES EF
+        WHERE EF.FILE_ID NOT IN (-3)
+
+done    
+        SELECT app.*, RI.*, r.*
+        FROM fpars.dbo.APPLICATIONS APP left outer join fpars.dbo.REPORT_INSTANCES RI on APP.APP_ID = RI.RPTINST_APP_ID inner join fpars.dbo.app_roles r on r.app_id = app.app_id
+        WHERE app.app_STATUS IN ('A', 'L', 'E')
+        and app.app_type_code = 'REPORT'
+            order by app.app_name
+
+done
+        select busrule_id
+            ,busrule_name
+            ,busrule_desc
+            ,busrule_type_code
+            ,busrule_sproc_name
+            ,busrule_status
+            ,busrule_crtd_dttm
+            ,busrule_crtd_work_id
+            ,busrule_upd_dttm
+            ,busrule_upd_work_id 
+        from busn_rules
+        where busrule_status not in ('D')
+        ORDER BY BUSRULE_NAME
+
+done
+        select busrule_id
+            ,br_asgn_type_code
+            ,br_asgn_fire_order
+            ,br_asgn_params
+            ,br_asgn_crtd_dttm
+            ,br_asgn_crtd_work_id
+            ,br_asgn_upd_dttm
+            ,br_asgn_upd_work_id 
+        from busn_rules_assigned
+        ORDER BY BR_ASGN_FIRE_ORDER
+
+done
+        SELECT VM.*
+        FROM VNDR_MASTER VM
+        WHERE VM.VNDR_STATUS NOT IN ('D')
+
+
+    
+
+        SELECT VC.*
+        FROM VNDR_CONTACTS VC
+        WHERE VC.VNDRCNTCT_STATUS NOT IN ('D')
+
+    
+
+        SELECT VD.*
+        FROM VNDR_DEPTTERMS VD
+        WHERE VD.VNDRDPT_STATUS NOT IN ('D')
+
+ done as hopeless   
+
+        SELECT CM.*
+            ,CD.PARTN_KEY as DISB_PARTN_KEY
+            ,CD.CONSLDATR_ID as DISB_CONSLDATR_ID
+            ,CD.CONSLDATR_ID_SRC as DISB_CONSLDATR_ID_SRC
+            ,CD.CONSLDATRDISB_SEQUENCE as DISB_CONSLDATRDISB_SEQUENCE
+            ,CD.CONSLDATRDISB_ACCT_ID as DISB_CONSLDATRDISB_ACCT_ID
+            ,CD.CONSLDATRDISB_ACCT_NO as DISB_CONSLDATRDISB_ACCT_NO
+            ,CD.CONSLDATRDISB_CODE_LEGACY as DISB_CONSLDATRDISB_CODE_LEGACY
+            ,CD.CONSLDATRDISB_CODE_TYPE as DISB_CONSLDATRDISB_CODE_TYPE
+            ,CD.CONSLDATRDISB_AMT as DISB_CONSLDATRDISB_AMT
+            ,CD.COMPANY_ID as DISB_COMPANY_ID
+            ,CD.NMG_COMPANY_CODE as DISB_NMG_COMPANY_CODE
+            ,CD.FPARS_COMPANY_CODE as DISB_FPARS_COMPANY_CODE
+            ,CD.DEPT_ID as DISB_DEPT_ID
+            ,CD.DEPT_CODE as DISB_DEPT_CODE
+            ,CD.LOCATION_ID as DISB_LOCATION_ID
+            ,CD.NMG_LOC_STORE_NO as DISB_NMG_LOC_STORE_NO
+            ,CD.CONSLDATRDISB_STATUS as DISB_CONSLDATRDISB_STATUS
+            ,CD.CONSLDATRDISB_CRTD_DTTM as DISB_CONSLDATRDISB_CRTD_DTTM
+            ,CD.CONSLDATRDISB_CRTD_WORK_ID as DISB_CONSLDATRDISB_CRTD_WORK_ID
+            ,CD.CONSLDATRDISB_UPD_DTTM as DISB_CONSLDATRDISB_UPD_DTTM
+            ,CD.CONSLDATRDISB_UPD_WORK_ID as DISB_CONSLDATRDISB_UPD_WORK_ID
+            ,CD.CONSLDATRDISB_CHKSUM as DISB_CONSLDATRDISB_CHKSUM
+            ,c.fisc_dt_yyyymm as crtd_fiscal_yyyymm
+            ,substring(convert(varchar, c.fisc_dt_yyyymm),1,4) + convert(varchar, c.fisc_wk_of_yr) as crtd_fiscal_yyyyww
+        FROM CALENDAR C, CONSLDATR_MSTR CM 
+            INNER JOIN CONSLDATR_DISTRIBUTIONS CD ON CD.PARTN_KEY = CM.PARTN_KEY
+                    AND CD.CONSLDATR_ID = CM.CONSLDATR_ID 
+        WHERE CM.CONSLDATR_STATUS NOT IN ('D')
+            AND CD.CONSLDATRDISB_STATUS NOT IN ('D')
+            AND substring(convert(varchar, CM.CONSLDATR_CRTD_DTTM,112),1,8) = substring(convert(varchar, C.CAL_DATE,112),1,8)
+
+done
+        SELECT CD.*
+        FROM CONSLDATR_MSTR CM
+            INNER JOIN CONSLDATR_DISTRIBUTIONS CD ON CD.PARTN_KEY = CM.PARTN_KEY
+                    AND CD.CONSLDATR_ID = CM.CONSLDATR_ID
+            WHERE CM.CONSLDATR_STATUS NOT IN ('D')
+                AND CD.CONSLDATRDISB_STATUS NOT IN ('D')
+
+done
+        SELECT DISTINCT CP.*
+                ,CASE WHEN CP.PURCHASE_ORDER_FOUND_FLAG = 'N' THEN NULL
+                    ELSE PO.FPARS_COMPANY_CODE END AS FPARS_COMPANY_CODE
+                ,CASE WHEN CP.PURCHASE_ORDER_FOUND_FLAG = 'N' THEN NULL
+                    ELSE PO.PO_STATUS END AS PO_STATUS
+                ,CASE WHEN CP.PURCHASE_ORDER_FOUND_FLAG = 'N' THEN NULL
+                    ELSE PO.VNDR_NAME END AS VNDR_NAME
+                ,CASE WHEN CP.PURCHASE_ORDER_FOUND_FLAG = 'N' THEN NULL
+                    ELSE PO.DIV_CODE END AS DIV_CODE
+                ,CASE WHEN CP.PURCHASE_ORDER_FOUND_FLAG = 'N' THEN NULL
+                    ELSE PO.STORES_CSV END AS STORES_CSV
+        FROM CONSLDATR_MSTR CM
+            INNER JOIN CONSLDATR_POS CP ON CP.PARTN_KEY = CM.PARTN_KEY
+                    AND CP.CONSLDATR_ID = CM.CONSLDATR_ID
+            LEFT JOIN PO_HEADERS PO ON CP.PURCHASE_ORDER_NO = PO.PO_NUMBER
+                    AND CM.COMPANY_ID = PO.COMPANY_ID
+        WHERE CM.CONSLDATR_STATUS NOT IN ('D')
+            AND CP.CONSLDATRPO_STATUS NOT IN ('D')
+
+done
+        select p.param_value, p.param_lst_upd_dttm, 
+               w.work_desc,
+               a.app_name, a.app_desc, a.app_family, a.app_type_code,
+               u.user_username, u.user_firstname, u.user_lastname, u.user_phone, u.user_email
+          from fpars.dbo.zld_process_control p, fpars.dbo.work_set w, fpars.dbo.applications a, fpars.dbo.users u  where p.param_name = 'TP_CURRENT_RUNNING_IND'
+           and w.work_id = p.param_lst_upd_work_id
+           and a.app_id = w.app_id
+           and u.user_id = w.user_id
+
+
+        select p.param_value
+          from fpars.dbo.zld_process_control p
+           where p.param_name = 'TP_PAYMENT_RUNNING_IND'
+
+done
+        select cv.*, im.invoice_batch_no, im.prono_tracking_no, im.purchase_order_no, im.purchase_order_found_flag, im.FPARS_COMPANY_CODE, im.COMPANY_ID, im.NMG_LOCATION_CODE, im.CARRIER_SCAC, im.SHIPPED_DTTM, im.ORIGIN_NAME, im.PAYMENT_DTTM_FPARS, im.OTHER_REFERENCE_NO, im.ORIGIN_AUX_NAME, im.LOC_ID, id.invdisb_code_legacy
+        from fpars.dbo.invoice_capvis_pos cv, fpars.dbo.invoice_mstr im, fpars.dbo.invoice_distributions id
+        WHERE im.invoice_id = cv.invoice_id
+          AND im.partn_key = cv.partn_key_inv
+          AND id.invoice_id = cv.invoice_id
+          AND id.partn_key = cv.partn_key_inv
+        ORDER by cv.capvispo_crtd_dttm desc
+
+
+        SELECT AB.* FROM ACCTS_BUDGETS AB
+        WHERE 1=1
+
+
+        SELECT MH.* FROM METRIC_HOLDS MH
+        WHERE 1=1
+
+
+        SELECT MP.* FROM METRIC_PAYMENTS MP
+        WHERE 1=1
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+    	UPDATE INVOICE_MSTR
+    	SET INVHDR_UPD_DTTM = GETDATE()
+	    	,INVHDR_UPD_WORK_ID = #invhdrUpdWorkID#
+	    	,PURCHASE_ORDER_NO=#purchaseOrderNo:VARCHAR#
+	    	,PURCHASE_ORDER_FOUND_FLAG=#purchaseOrderFoundFlag:VARCHAR#
+	    	,FPARS_COMPANY_CODE=#fparsCompanyCode#
+	    	,COMPANY_ID=#companyID#
+	    	,NMG_LOCATION_CODE = #nmgLocationCode#
+	    	,LOC_ID = #locID#
+	    WHERE
+	    	PARTN_KEY=#partnKey#
+	    	AND INVOICE_ID=#invoiceID#
+
+
+    	UPDATE INVOICE_CAPVIS_POS
+    	SET CAPVISPO_UPD_DTTM = GETDATE()
+	    	,CAPVISPO_UPD_WORK_ID = #capVisPOUpdWorkID#
+	    	,WORKFLOW_STATUS = #workflowStatus:VARCHAR#
+	    WHERE
+	    	PARTN_KEY_INV=#partnKeyInv#
+	    	AND CAPVISPO_ID=#capVisPOID#
+
+    
+    	UPDATE INVOICE_MSTR
+	    SET INVHDR_UPD_DTTM = GETDATE()
+	    	,INVHDR_UPD_WORK_ID = #workID#
+	    	<isNotNull property="workflowStep">,WORKFLOW_STEP=#workflowStep#</isNotNull>
+	    	<isNotNull property="workflowStatus">,WORKFLOW_STATUS=#workflowStatus#</isNotNull>
+	    	<isNotNull property="poNumber">,PURCHASE_ORDER_NO=#poNumber#</isNotNull>
+	    	<isNotNull property="poNumberFound">,PURCHASE_ORDER_FOUND_FLAG=#poNumberFound#</isNotNull>
+	    	<isNotNull property="fparsCompanyCode">,FPARS_COMPANY_CODE=#fparsCompanyCode#</isNotNull>
+	    	<isNotNull property="nmgCompanyCode">,NMG_COMPANY_CODE=#nmgCompanyCode#</isNotNull>
+	    	<isNotNull property="companyID">,COMPANY_ID=#companyID#</isNotNull>
+	    	<isNotNull property="locID">,LOC_ID=#locID#</isNotNull>
+	    	<isNotNull property="nmgLocationCode">,NMG_LOCATION_CODE=#nmgLocationCode#</isNotNull>
+    	WHERE 
+    	WORKFLOW_STEP = 'HOLDING(H)'
+    	AND PARTN_KEY IN (
+    		<iterate removeFirstPrepend="true" conjunction="," property="partnKey">#partnKey[]#</iterate>
+    	) AND INVOICE_ID IN (
+    		<iterate removeFirstPrepend="true" conjunction="," property="invoiceID">#invoiceID[]#</iterate>
+    	)
+    	
+    		UPDATE INVOICE_DISTRIBUTIONS
+    		SET INVDISB_UPD_DTTM = GETDATE()
+    			,INVDISB_UPD_WORK_ID = #workID#
+    			,INVDISB_ACCT_ID = #acctID#
+    			,INVDISB_ACCT_NO = #acctNumber#
+    			,INVDISB_CODE_LEGACY = #legacyCode#
+    			,INVDISB_CODE_TYPE = #legacyType#
+	    	<isNotNull property="fparsCompanyCode">,FPARS_COMPANY_CODE=#fparsCompanyCode#</isNotNull>
+	    	<isNotNull property="nmgCompanyCode">,NMG_COMPANY_CODE=#nmgCompanyCode#</isNotNull>
+	    	<isNotNull property="companyID">,COMPANY_ID=#companyID#</isNotNull>
+    		WHERE 
+	    		PARTN_KEY IN (
+		    		<iterate removeFirstPrepend="true" conjunction="," property="partnKey">#partnKey[]#</iterate>
+		    	) AND INVOICE_ID IN (
+		    		<iterate removeFirstPrepend="true" conjunction="," property="invoiceID">#invoiceID[]#</iterate>
+		    	)
+		    	AND INVDISB_SEQUENCE_NO = 0
+    
+    	UPDATE CONSLDATR_MSTR
+    	SET CONSLDATR_UPD_DTTM = GETDATE()
+	    	,CONSLDATR_UPD_WORK_ID = #consldatrUpdWorkID#
+	    	,FPARS_COMPANY_CODE=#fparsCompanyCode#
+	    	,NMG_COMPANY_CODE=#nmgCompanyCode#
+	    	,COMPANY_ID=#companyID#
+	    	,NMG_LOCATION_CODE = #nmgLocationCode#
+	    	,LOC_ID = #locID#
+	    	,DEPT_ID = #deptID#
+	    	,DEPT_CODE = #deptCode#
+	    WHERE
+	    	PARTN_KEY=#partnKey#
+	    	AND CONSLDATR_ID=#consldatrID#
+
+    
+    	UPDATE CONSLDATR_MSTR
+	    SET CONSLDATR_UPD_DTTM = GETDATE()
+	    	,CONSLDATR_UPD_WORK_ID = #workID#
+	    	<isNotNull property="workflowStep">,WORKFLOW_STEP=#workflowStep#</isNotNull>
+	    	<isNotNull property="workflowStatus">,WORKFLOW_STATUS=#workflowStatus#</isNotNull>
+	    	<isNotNull property="deptID">,DEPT_ID=#deptID#</isNotNull>
+	    	<isNotNull property="deptCode">,DEPT_CODE=#deptCode#</isNotNull>
+	    	<isNotNull property="fparsCompanyCode">,FPARS_COMPANY_CODE=#fparsCompanyCode#</isNotNull>
+	    	<isNotNull property="nmgCompanyCd">,NMG_COMPANY_CODE=#nmgCompanyCd#</isNotNull>
+	    	<isNotNull property="companyID">,COMPANY_ID=#companyID#</isNotNull>
+	    	<isNotNull property="nmgLocationCd">,NMG_LOCATION_CODE=#nmgLocationCd#</isNotNull>
+	    	<isNotNull property="locID">,LOC_ID=#locID#</isNotNull>
+    	WHERE 
+    	WORKFLOW_STEP = 'HOLDING(H)'
+    	AND PARTN_KEY IN (
+    		<iterate removeFirstPrepend="true" conjunction="," property="partnKey">#partnKey[]#</iterate>
+    	) AND CONSLDATR_ID IN (
+    		<iterate removeFirstPrepend="true" conjunction="," property="consldatrID">#consldatrID[]#</iterate>
+    	)
+    	
+   			UPDATE CONSLDATR_DISTRIBUTIONS
+   			SET CONSLDATRDISB_UPD_DTTM = GETDATE()
+   				,CONSLDATRDISB_UPD_WORK_ID = #workID#
+   				,CONSLDATRDISB_ACCT_ID = #acctID#
+   				,CONSLDATRDISB_ACCT_NO = #acctNumber#
+   				,CONSLDATRDISB_CODE_LEGACY = #legacyCode#
+   				,CONSLDATRDISB_CODE_TYPE = #legacyType#
+	    	<isNotNull property="deptID">,DEPT_ID=#deptID#</isNotNull>
+	    	<isNotNull property="deptCode">,DEPT_CODE=#deptCode#</isNotNull>
+	    	<isNotNull property="fparsCompanyCode">,FPARS_COMPANY_CODE=#fparsCompanyCode#</isNotNull>
+	    	<isNotNull property="nmgCompanyCd">,NMG_COMPANY_CODE=#nmgCompanyCd#</isNotNull>
+	    	<isNotNull property="companyID">,COMPANY_ID=#companyID#</isNotNull>
+	    	<isNotNull property="nmgLocationCd">,NMG_LOC_STORE_NO=#disbNmgLoc#</isNotNull>
+	    	<isNotNull property="locID">,LOCATION_ID=#disbLocID#</isNotNull>
+	    	WHERE CONSLDATRDISB_SEQUENCE = 0
+	    	AND PARTN_KEY IN (
+	    		<iterate removeFirstPrepend="true" conjunction="," property="partnKey">#partnKey[]#</iterate>
+	    	) AND CONSLDATR_ID IN (
+	    		<iterate removeFirstPrepend="true" conjunction="," property="consldatrID">#consldatrID[]#</iterate>
+	    	)
+   		
+
+    
+
+	
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    	Select 
+    		vd.value_name
+    		,vd.value_result_type_code
+    		,case when vd.value_get_instances_ind = 'Y' THEN 'COMBO'
+    			when vd.value_result_type_code IN ('DATE', 'DATETIME') THEN 'DATETIME'
+    			ELSE 'TEXT'
+    			END AS field_type_code
+    		,vd.value_key_ind
+    		,vd.value_lov_columnname
+    		,vd.value_get_instances_ind
+    		,av.appvalue_tbl_alias
+    		,av.appvalue_dflt_field_ind
+    		,av.appvalue_order
+    	FROM APPLICATIONS A 
+    		INNER JOIN APP_VALUES AV ON A.APP_ID = AV.APP_ID
+    		INNER JOIN VALUES_DEFN VD ON AV.VALUE_ID = VD.VALUE_ID
+    	WHERE
+    		A.APP_NAME = #value#
+    
+    	SELECT 
+    		CASE WHEN VD.VALUE_TYPE_CODE = 'DATETIME'
+    			THEN  substring(value, 5,2) + '/' + substring(value, 7, 2) + '/' + substring(value, 1,4)
+    		ELSE VALUE END AS 'FIELD_VALUE'
+    	FROM VALUES_DEFN VD
+    		INNER JOIN VALUES_INSTANCES VI ON VD.VALUE_ID = VI.VALUE_ID 
+    	WHERE
+    		VD.VALUE_NAME = #value#
+    	ORDER BY 1
+    
+    	SELECT DISTINCT
+    		UP.USER_ID
+			,U.USER_USERNAME
+			,UP.PREF_NAME
+			,UP.HIST_DAYS_BACK
+			,UP.COMPANY_CODE_CSV
+			,UP.SCAC_CSV
+			,UP.DIVISION_CSV
+			,UP.DEPARTMENT_CSV
+			,UP.STORE_CSV
+			,UP.INVOICE_TYPE_CSV
+			,UP.INVOICE_DIRECTION_CSV
+			,UP.PO_TYPE_CSV
+			,UP.TRANSACTION_TYPE_CSV
+			,UP.PROCESS_FAMILY_CSV
+			,UP.PROCESS_STATUSES_CSV
+			,UP.PREF_STATUS
+			,UP.PREF_CRTD_DTTM
+			,UP.PREF_CRTD_WORK_ID
+			,UP.PREF_UPD_DTTM
+			,UP.PREF_UPD_WORK_ID
+		FROM USER_PREFERENCES UP 
+			INNER JOIN USERS U ON UP.USER_ID = U.USER_ID
+		WHERE 
+			UP.PREF_STATUS NOT IN ('D')
+				U.USER_USERNAME = #loginID#
+			AND
+				UP.PREF_NAME = #prefName#
+			ORDER BY 
+			U.USER_USERNAME
+			,UP.PREF_NAME
+    
+		select 
+			ui_field_inquiry_name
+			,ui_field_display_name
+			,ui_field_value_field
+			,ui_field_default_ind
+		from ui_inquiry_field 
+		ORDER BY UI_FIELD_INQUIRY_NAME
