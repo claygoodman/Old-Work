@@ -1,0 +1,122 @@
+http://www.mssqltips.com/sqlservertip/1914/sql-server-database-partitioning-myths-and-truths/
+
+
+--migrate to partition with clustered IDX
+CREATE CLUSTERED INDEX idx ON tblPartitioned(SQLCreated) WITH DROP_EXISTING, ONLINE=ON ON PScheme_Day(SQLCreated)
+
+--to switch the partition
+SET LOCK_TIMEOUT 30000 
+ALTER TABLE myPartionedTable SWITCH PARTITION 2 TO SwitchTable
+
+
+
+-- to return fragmentation information on partitioned indexesSELECT
+ object_name(a.object_id) AS object_name,
+ a.index_id,
+ b.name,
+ b.type_desc,
+ a.partition_number,
+ a.avg_fragmentation_in_percent
+FROM sys.dm_db_index_physical_stats (DB_ID(), NULL, NULL , NULL, 'LIMITED') a
+JOIN sys.indexes b on a.object_id = b.object_id and a.index_id = b.index_id
+order by object_name(a.object_id), a.index_id, b.name, b.type_desc, a.partition_number
+
+
+--Rebuild only partition 11.
+ALTER INDEX IX_alert_events_timestamp
+ON dbo.alert_events
+REBUILD Partition = 11;
+GO
+
+
+*****************
+--note: this guy uses file groups instead of just files
+
+ALTER DATABASE OrderDB ADD FILEGROUP [1999]
+
+ALTER DATABASE OrderDB ADD FILE (NAME = N'1999', FILENAME
+= N'C:\OrderDB\1999.ndf', SIZE = 5MB, MAXSIZE = 100MB, FILEGROWTH = 5MB) TO
+FILEGROUP [1999]  
+
+
+CREATE PARTITION FUNCTION FNOrderDateRange (DateTime) AS
+RANGE LEFT FOR VALUES ('19991231', '20001231', '20011231')
+
+The above partition function specifies that the Order date column has a value between:
+
+ Collapse | Copy Code
+DateTime <= 1999/12/31 would fall into 1<sup>st</sup> partition.
+DateTime > 1999/12/31 and <= 2000/12/31 would fall info 2<sup>nd</sup> partition.
+DateTime > 2000/12/31 and <= 2001/12/31 would fall info 3rd partition.
+DateTime > 2001/12/31 would fall info 4th partition.
+
+RANGE LEFT is used to specify that the boundary value should fall into the left partition. For example, here the boundary value 1999/12/31 is falling into the first partition (with all other dates less than this value), and the next value is falling into the next partition. If we specify RANGE RIGHT, then the boundary value would fall into the right partition. So, in this example, the boundary value 2000/12/31 would fall into the second partition, and any date less than this value would fall into the first partition.
+�Create a partition schema
+
+The partition scheme maps the partitions of a partitioned table/index to the file groups that will be used to store the partitions.
+
+The following command creates a partition schema:
+
+ Collapse | Copy Code
+CREATE PARTITION SCHEME OrderDatePScheme AS PARTITION FNOrderDateRange
+TO ([1999], [2000], [2001], [2002])
+Here, we are specifying that:
+
+ Collapse | Copy Code
+The 1<sup>st</sup> partition should go into the ‘1999' file group
+The 2<sup>nd </sup>partition should go into the ‘2000' file group
+The 3<sup>rd</sup> partition should go into the ‘2001' file group
+The 4<sup>th</sup> partition should go into the ‘2002' file group
+
+
+
+ALTER TABLE Orders DROP CONSTRAINT
+PK_Orders
+Recreate the clustered index on the partition scheme. The index can be created on a partitioned scheme as follows:
+
+ Collapse | Copy Code
+CREATE UNIQUE CLUSTERED INDEX PK_Orders ON Orders(OrderDate) ON
+OrderDatePScheme (OrderDate)
+
+
+****************************
+http://blogs.msdn.com/b/felixmar/archive/2011/02/14/partitioning-amp-archiving-tables-in-sql-server-part-1-the-basics.aspx
+
+microsoft ideas
+
+LEFT means each value represents the upper limit for each range, in other words, each range goes from each boundary value to the LEFT.
+ 
+RIGHT means each value represent the lower limit for each range but the first range will start to the right of the first value, so there will be an additional range  (the first range) and the first boundary value in the function defines where the second range begins. 
+
+"each value" references each value in the range definition
+
+
+values beyond the highest defined value go in the last partition; values smaller than the smallest go in the first. they never run out of ranges
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,3 @@
+SELECT name FROM sys.sql_logins 
+WHERE PWDCOMPARE('', password_hash) = 1 
+OR PWDCOMPARE('', password_hash, 1) = 1 ;

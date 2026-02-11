@@ -1,0 +1,40 @@
+SELECT
+@@SERVERNAME  AS SSERVER
+,BS.backup_start_date
+,BS.backup_finish_date
+,BS.type
+,BS.database_name
+,BMF.physical_device_name 
+FROM 
+msdb.dbo.backupset AS BS  
+INNER JOIN msdb.dbo.backupmediafamily AS BMF WITH (NOLOCK) ON BS.media_set_id = BMF.media_set_id 
+WHERE 
+BS.is_copy_only = 0
+AND BS.type = 'D'
+AND BS.database_name IN
+	('DRWebapp_Content_01','ManagedSSP_Content','ManagedSSP_DB','ManagedSSP_Search_DB')
+ORDER BY BS.Backup_finish_date  DESC
+--3 types: D for database, L for log, I for differential
+
+
+--better
+
+SELECT
+@@SERVERNAME  AS SSERVER
+,BS.backup_start_date
+,BS.backup_finish_date
+,BS.type
+,BS.database_name
+,BMF.physical_device_name 
+FROM 
+msdb.dbo.backupset AS BS  
+INNER JOIN msdb.dbo.backupmediafamily AS BMF WITH (NOLOCK) ON BS.media_set_id = BMF.media_set_id 
+WHERE 
+BS.is_copy_only = 0
+AND 
+(BS.type = 'D'
+OR BS.type = 'I'
+)
+--AND BS.database_name LIKE '%GSK_Migrated_Community_Sites%'
+ORDER BY BS.Backup_finish_date  DESC
+--3 types: D for database, L for log, I for differential

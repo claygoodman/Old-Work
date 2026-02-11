@@ -1,0 +1,35 @@
+--mine
+
+  SELECT 
+SD.name
+,SDM.mirroring_state_desc
+,SDM.mirroring_witness_state_desc
+,SDM.mirroring_role_desc
+,SDM.mirroring_partner_instance
+,SDM.mirroring_witness_name
+,SDM.mirroring_safety_level_desc
+,SDM.mirroring_partner_name
+ FROM sys.database_mirroring SDM
+ INNER JOIN sys.databases SD 
+ ON SDM.database_id = SD.database_id
+ WHERE SDM.database_id > 4
+ AND SD.name NOT IN ('opsmetrics','zSOSET_BlockingMonitor')
+
+--find current status
+select db_name(database_id)[DBName],mirroring_partner_instance, mirroring_witness_name, 
+Mirroring_State_desc,Mirroring_role_desc,Mirroring_safety_level,Mirroring_witness_state_desc
+from sys.database_mirroring 
+where mirroring_guid is not null 
+ORDER BY mirroring_role_desc
+
+
+--jorge resource
+
+select db_name(database_id)[DBName],mirroring_partner_instance, mirroring_witness_name, 
+Mirroring_State_desc,Mirroring_role_desc,Mirroring_safety_level,Mirroring_witness_state_desc
+from sys.database_mirroring 
+where mirroring_guid is not null 
+and ( mirroring_state =1 or mirroring_witness_state =2 )
+
+select name,type_desc,state_desc,role_desc from sys.database_mirroring_endpoints
+WHERE (state = 1 or state =2)

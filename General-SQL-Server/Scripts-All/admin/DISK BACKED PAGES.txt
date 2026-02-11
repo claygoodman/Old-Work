@@ -1,0 +1,2 @@
+disk-backed pages  = page cache = a buffer of pages kept in main memory for quicker access.
+applied to tempdb by paul randall this means the tempdb is located in the Buffer pool of SQL Server. When the buffer pool comes under pressure the items in RAM are written to disk in the data pages of Tempdb

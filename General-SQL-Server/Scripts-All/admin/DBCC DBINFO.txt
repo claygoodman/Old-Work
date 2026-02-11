@@ -1,0 +1,3 @@
+DBCC TRACEON (3604);
+GO
+DBCC DBINFO ('Test_TblDoc')

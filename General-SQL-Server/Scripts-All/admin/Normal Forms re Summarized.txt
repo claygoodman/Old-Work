@@ -1,0 +1,20 @@
+1st: 	Contains only atomic values
+ 	There are no repeating groups
+
+
+2nd: 	It is in first normal form
+ 	All non-key columns are fully dependent on the primary key
+	
+
+3rd: 	it is in second normal form
+	transitive functionality removed;
+	cols not dependent upon the PK are not dependent upon another
+
+
+Boyce Cod Normal Form BCNF: every attribute is a candidate key
+
+4th: all foreign keys
+	all columns are 
+
+5th: every attribute is part of a key
+

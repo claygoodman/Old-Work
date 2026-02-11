@@ -1,0 +1,90 @@
+select * from mssnapshot_agents
+increase snapshot agent queryTimeout from 1800 secs to much more
+
+Replication monitor, select publication, r-click subscription and choose agent profile; create new agent profile and change existing agents to use the new profile after setting -queryTimeout parameter
+ReadBatchSize and ReadBatchThreshhold to low values
+change the ReadBatchSize; less than 500 to clear backlog then backup to reset
+change the ReadBatchThreshold
+
+
+Distribution Agent Change
+reduce CommitBatchSize and CommitBatchThreshold to create smaller transactions
+run distributor cleanup more frequently; modify job timing
+change the MaxCmdsInTran; risky
+
+
+
+initialize with backups, not snapshots
+
+
+customize agent parameters
+
+
+
+-instead of reinitialize
+update MSsubscriptions
+set status = 2 
+where subscriber_db = ‘databasename’ 
+and publisher_db = ‘databasename’
+
+seperate publications of:
+views from procs
+procs from functions
+functions for UDTs
+all related tables
+all from unrelated tables
+
+evaluate also with redgate sql compare
+
+
+--******************************DIAGNOSTICS**************************
+
+monitoring tools
+replication monitor
+activity monitor
+perfmon
+
+
+Add “-OUTPUT to log reader
+
+DBCC SQLPERF(LOGSPACE)
+DBCC LOGINFO
+
+--Return all commands from the next pending transaction
+sp_replcmds @maxtrans = 1 
+
+--Return all commands for the next 500 transactions
+sp_replcmds @maxtrans = 500
+ 
+sp_replflush
+ 
+SELECT dbid, begin_lsn, commit_lsn, rows, cms_in_tran FROM sys.dm_repl_traninfo 
+
+SELECT count(*) FROM ::fn_dblog(NULL, NULL) 
+
+EXEC sp_repldone @xactid = NULL, @xact_segno = NULL, @numtrans = 0, @time = 0, @reset = 1
+
+Disk subsystems
+
+Network I/O
+
+SELECT TOP 25  st.text, qp.query_plan, 
+    (qs.total_logical_reads/qs.execution_count) as avg_logical_reads,
+    (qs.total_logical_writes/qs.execution_count) as avg_logical_writes,
+    (qs.total_physical_reads/qs.execution_count) as avg_phys_reads,
+  qs.*
+FROM sys.dm_exec_query_stats as qs
+         CROSS APPLY sys.dm_exec_sql_text(qs.sql_handle) as st
+         CROSS APPLY sys.dm_exec_query_plan(qs.plan_handle) as qp
+WHERE st.text like 'CREATE PROCEDURE sp_MSadd_replcmds%'
+  ORDER BY qs.total_worker_time DESC
+
+
+SELECT name, rowcnt, STATS_DATE (id, indid) as 'Last Update Stats'
+FROM distribution.dbo.sysindexes
+WHERE name IN('ucMSrepl_transactions', 'ucMSrepl_commands')
+
+http://blogs.msdn.com/b/chrissk/archive/2009/05/25/transactional-replication-conversations.aspx
+
+
+

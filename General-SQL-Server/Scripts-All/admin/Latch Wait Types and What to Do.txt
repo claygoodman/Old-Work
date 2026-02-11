@@ -1,0 +1,101 @@
+acceptable wait types
+---------------------------
+lazwriter_sleep
+sqltrace_buffer_flush
+logmgr_queue
+checkpoint_queue
+request_for_deadlock_search
+
+************************
+CXPACKET waits
+--------------------------
+long waits mean maxdop query hint or another wait
+another wait may be causing it
+
+*****************************
+Latch Definitions
+--------------------------------
+ACCESS_METHODS_DATASET_PARENT / ACCESS_METHODS_SCAN_RANGE_GENERATOR
+
+	appear with CXPACKET and PAGEIOLATCH_XX waits
+		maybe increase cost of parallelism, maxdop hint, RG to limit DoP
+		maybe exec plan change from seeks to scans, frag'ed statistics
+
+ACCESS_METHODS_HOBT_COUNT 
+	flushes p & r cnt difs from HoBt to metadata tables; large #s mean hits on one table
+
+LOG_MANAGER 
+	a t-log is growing because it could not clear
+		SELECT log_reuse_wait_desc FROM sys.databases WHERE name = 'dbname'
+
+TRACE_CONTROLLER 
+	if lots, too many traces running
+
+DBCC_MULTIOBJECT_SCANNER 
+	KB 2634571
+
+ACCESS_METHODS_HOBT_VIRTUAL_ROOT 
+	reads index metadata looking for a root pageID; page splits force latch into EX mode; forces threads using SH to wait.
+	may come from large concurrent connections on a small index without page splits
+
+FGCB_ADD_REMOVE 
+	= File Group Control Block
+	caused by auto grow, create or concurrent allocations in a filegroup with lots of files
+
+
+DATABASE_MIRRORING_CONNECTION 
+	too many database mirroring sessions on the server
+
+
+NESTING_TRANSACTION_FULL / NESTING_TRANSACTION_READONLY
+	controls access to parallel nested transactions
+	_FULL = active trans
+	suggests unwanted parallelism
+
+
+SOS_SCHEDULER_YIELD
+	high count/low wait = good
+	high count/high wait = contending queries
+	low count/high wait = someone not yielding or preemptive threads hogging CPU
+
+
+discover wait types 
+select map_value from sys.dm_xe_map_values 
+
+
+DBMIRROR_DBM_EVENT
+	log shipping to secondary delay
+
+LOG_REUSE_WAIT in sys.databases
+	prevents truncating log
+
+session status of PRECONNECT
+	a logon trigger or RG classifier function stalled a login
+
+"LOADER LOCK WAIT" in sys.dm_os+spinlock+stats
+	"backoffs" in poorly written DLL
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

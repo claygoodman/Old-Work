@@ -1,0 +1,10 @@
+SET NOCOUNT ON
+DECLARE @crdate DATETIME, @hr VARCHAR(50), @min VARCHAR(5)
+SET @crdate = (SELECT create_date FROM sys.databases WHERE NAME='tempdb')
+SET @hr=(DATEDIFF ( mi, @crdate,GETDATE()))/60
+IF ((DATEDIFF ( mi, @crdate,GETDATE()))/60)=0
+SELECT @min=(DATEDIFF ( mi, @crdate,GETDATE()))
+ELSE
+SELECT @min=(DATEDIFF ( mi, @crdate,GETDATE()))-((DATEDIFF( mi, @crdate,GETDATE()))/60)*60
+PRINT 'SQL Server "' + CONVERT(VARCHAR(20),SERVERPROPERTY('SERVERNAME'))+'" has been Online for the past '+@hr+' hours & '+@min+' minutes'
+SET NOCOUNT OFF

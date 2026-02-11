@@ -1,0 +1,31 @@
+Auto Shrink Disabled 
+Authentication Mode 
+SQL Password Expiration 
+SQL Password Policy 
+Guest Permissions 
+Last Backup Time 
+Auto Grow 
+Auto Create Statistics 
+Auto Update Statistics 
+Enforce Naming Convention 
+Database Compatibility Level 
+Recovery Model 
+Database Encryption 
+Is Trustworthy Option 
+Login Auditing 
+Database Mail Enabled 
+SQLMail Disabled 
+Extended Stored Procedures Disabled 
+Backup Compression 
+SQL Server Agent is running 
+Agent jobs have notification on failure 
+Monitor SQL Agent Jobs  
+Transaction Log Backups for Full and Bulk-Logged 
+
+http://technet.microsoft.com/en-us/library/bb510667.aspx
+
+http://www.sqlservercentral.com/articles/Policy+Based+Management+(PBM)/88486/
+
+http://www.mssqltips.com/sqlservertip/1492/using-policy-based-management-in-sql-server-2008/
+
+http://www.mssqltips.com/sqlservertip/2192/monitor-sql-server-agent-jobs-with-policy-based-management/

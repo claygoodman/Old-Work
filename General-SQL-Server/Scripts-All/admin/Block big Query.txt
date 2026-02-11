@@ -1,0 +1,42 @@
+SELECT 
+w.session_id AS [Spid]
+,DB_NAME(r.database_id) AS [DBName]
+,s.[Status]
+,w.Blocking_session_id
+,w.wait_duration_ms
+,s.[Program_name]
+,s.Client_interface_name
+,s.[Host_name]
+,s.cpu_time AS [cpu_time_ms]
+,s.Memory_usage* 8/1024 AS [Memory_usage]
+,w.wait_type
+,r.wait_resource
+,s.[deadlock_priority]
+,CASE s.transaction_isolation_level
+       WHEN 0 THEN 'Unspecified'
+       WHEN 1 THEN 'ReadUncomitted'
+       WHEN 2 THEN 'Readcomitted'
+       WHEN 3 THEN 'Repeatable'
+       WHEN 4 THEN 'Serializable'
+       WHEN 5 THEN 'Snapshot' 
+END AS TRANSACTION_ISOLATION_LEVEL 
+,s.Original_login_name
+,s.login_time
+,s.Last_request_start_time
+,s.Last_request_end_time
+,r.percent_complete
+,s.Row_count
+,t.Text
+,q.query_plan
+,aa.text AS [BlockingText]
+FROM sys.dm_os_waiting_tasks AS w 
+Inner Join sys.dm_exec_sessions AS s ON w.session_id = s.session_id 
+Inner Join sys.dm_exec_requests AS r ON s.session_id = r.session_id 
+OUTER APPLY sys.dm_exec_sql_text (r.[sql_handle]) AS t 
+Cross Apply Sys.Dm_Exec_Query_Plan(r.Plan_Handle) AS q
+outer apply 
+(SELECT s2.[text] FROM sys.sysprocesses AS sp 
+	CROSS APPLY Sys.Dm_Exec_Sql_Text(Sp.[Sql_Handle]) AS S2 WHERE sp.spid = w.Blocking_session_id) AS aa
+WHERE s.is_user_process = 1 
+AND w.Blocking_session_id > 0
+ORDER BY w.wait_duration_ms DESC

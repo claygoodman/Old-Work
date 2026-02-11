@@ -1,0 +1,13 @@
+SELECT 
+DB_NAME(vfs.database_id) AS NM
+,io_stall_write_ms
+,num_of_writes
+,io_stall_write_ms/num_of_writes AS Product
+FROM
+    sys.dm_io_virtual_file_stats (NULL,NULL) AS [vfs]
+JOIN sys.master_files AS [mf]
+    ON [vfs].[database_id] = [mf].[database_id]
+    AND [vfs].[file_id] = [mf].[file_id]
+ WHERE num_of_writes <> 0
+ AND DB_NAME(vfs.database_id) = 'tempdb'
+ ORDER BY Product DESC
