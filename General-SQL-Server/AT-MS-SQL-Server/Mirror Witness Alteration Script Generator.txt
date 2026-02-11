@@ -1,0 +1,8 @@
+select 'USE master;ALTER DATABASE [' + db_name(database_id) + ']  SET WITNESS OFF'[DBName]
+,mirroring_partner_instance, mirroring_witness_name 
+,'USE master;ALTER DATABASE [' + db_name(database_id) + ']  SET WITNESS = ''' + mirroring_witness_name  + ''''
+from sys.database_mirroring where mirroring_guid is not null
+and mirroring_role = 1
+order by db_name(database_id)
+
+

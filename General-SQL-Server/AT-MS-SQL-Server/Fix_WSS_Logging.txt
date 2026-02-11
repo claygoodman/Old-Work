@@ -1,0 +1,185 @@
+--*********************************************************************
+--********************BUILD A ROBOCOPY STRING**************************
+--*********************************************************************
+--BACKUP VARIABLES
+DECLARE @cpy VARCHAR(400) = 'ROBOCOPY '								--Contains the robocopy commands to pull the full backup to the DR BK server
+DECLARE @BKFilePath VARCHAR(200)									--append the BK path and file name for the full Backup
+DECLARE @FullBK VARCHAR(200)										--keep the last full backup path and filename
+DECLARE @FileName VARCHAR(75) =  @@SERVERNAME + '-WSS_Logging.bak'	--pre-fill the filename of the backup file
+DECLARE @DRBKSVR VARCHAR(100), @DRSQLSVR VARCHAR(50)				--the DR backup server
+DECLARE @DifFBack VARCHAR(200)										--the differential backup string you create
+DECLARE @Fw CHAR(1), @Dw CHAR(1)									--verify the week of the backup strings; typically the diff is of a different week than the full. 
+DECLARE @tm datetime2(0), @tmstr VARCHAR(25)						--These build the diff backup string
+DECLARE @altDB VARCHAR (50),@BKFulStr VARCHAR(250), @DifBKStr VARCHAR(250)	--the final backup strings
+
+--RESTORE VARIABLES
+DECLARE @with VARCHAR(75)											--part of the restore string
+DECLARE @RestoreFullstr VARCHAR(450)								--the full restore string
+DECLARE @RestoreDiffstr VARCHAR(250)								--the differential restore string
+
+--***********************************************************************************************
+--*************************************BEGIN POPULATING VARIABLES********************************
+--***********************************************************************************************
+
+ SET @BKFilePath = ( 
+SELECT  TOP 1 BMF.physical_device_name FROM msdb.dbo.backupmediafamily BMF
+INNER JOIN msdb.dbo.backupset BS ON BMF.media_set_id = BS.media_set_id
+WHERE BMF.logical_device_name LIKE '%WSS_Logging%' AND BS.type = 'D'
+ORDER BY BS.backup_finish_date DESC
+)
+
+SET @FullBK = @BKFilePath											--Assign the full backup info without a parse for later use
+
+
+SET @BKFilePath =													--parse off the file name which is always structured "servername + - + wss_logging.bak"
+	LEFT(@BKFilePath,LEN(@BKFilePath) - (LEN(@FileName))-1)	
+
+
+SET @DRSQLSVR = (													--get the DR SQL Server
+	SELECT  secondary_server  FROM msdb.dbo.log_shipping_primary_secondaries   
+	WHERE secondary_database = 'WSS_Logging'
+	)
+
+
+SET @DRBKSVR = REPLACE(@DRSQLSVR,'SQ','BK')							--Construct a DR BK server string from this
+
+
+
+SET @DRBKSVR = '\\' + @DRBKSVR + '\E$\\'							--Construct a destination path for the copy
+
+
+SET @cpy = @cpy + @BKFilePath + ' ' + @DRBKSVR + ' ' + @FileName	--Complete the Copy String
+
+PRINT '--The Copy Command: run this in a cmd window on the DR backup server'
+PRINT @cpy
+
+--*************Build A diff*************************
+
+--full is defined above
+
+--Build part of the diff string
+
+SET @tm = (SELECT SYSDATETIME())
+SET @tmstr = @tm
+SET @tmstr = REPLACE(@tmstr,'-','')
+SET @tmstr = REPLACE(@tmstr,':','')
+SET @tmstr = REPLACE(@tmstr,' ','')
+SET @tmstr = CAST(MONTH(SYSDATETIME()) AS VARCHAR) + CAST (DAY(SYSDATETIME())AS VARCHAR) + CAST(YEAR(SYSDATETIME()) AS VARCHAR) + '_'+ RIGHT(@tmstr,6)
+
+SET @DiffBack = @BKFilePath + '\Diff\'+ @@SERVERNAME + '-Wss_Logging-' + @tmstr + '_Diff.BAK'	--Construct a diff string
+
+
+
+
+PRINT ''
+PRINT '--*****************DISABLE PROD JOBS***********************'
+DECLARE @sql NVARCHAR(2000)	--contains the executable string to print
+DECLARE @AlertJob VARCHAR(50)	--the name of the alert job
+DECLARE @lsBKJob VARCHAR(50)	--the ls backup job name
+DECLARE @HealthJob VARCHAR(50)	--the sql health job
+
+SET @HealthJob = (SELECT name FROM msdb.dbo.sysjobs WHERE name LIKE '%health%')
+SET @AlertJob = (SELECT name FROM msdb.dbo.sysjobs WHERE name LIKE '%lsalert%')
+SET @lsBKJob = (SELECT name FROM msdb.dbo.sysjobs WHERE name LIKE '%lsBackup_WSS%')
+
+
+
+SET @sql = 'EXEC msdb.dbo.sp_update_job @job_name = [' + @healthjob + '], @enabled = 0'
+PRINT @sql
+SET @sql = 'EXEC msdb.dbo.sp_update_job @job_name = [' + @AlertJob + '], @enabled = 0'
+PRINT @sql
+SET @sql = 'EXEC msdb.dbo.sp_update_job @job_name = [' + @lsBKJob + '], @enabled = 0'
+PRINT @sql
+
+PRINT ''
+--***************BUILD AND PRINT THE BACKUP STRINGS *****************************
+
+SET @altDB = 'ALTER DATABASE Wss_Logging SET RECOVERY FULL'
+PRINT @altDB
+
+SET @BKFulStr = 'BACKUP DATABASE WSS_Logging TO DISK = ' + CHAR(39) + @FullBK + CHAR(39)
++ ' WITH INIT, SKIP, CHECKSUM, COMPRESSION, STATS'
+PRINT @BKFulStr
+
+SET @DifBKStr = 'BACKUP DATABASE WSS_Logging TO DISK = ' +  CHAR(39) + @DiFFBack + CHAR(39)
++ ' WITH DIFFERENTIAL, INIT, SKIP, CHECKSUM, COMPRESSION, STATS'
+PRINT @DifBKStr
+
+
+
+--*******************************DR SIDE OF THINGS********************************
+PRINT '--*********************DISABLE THE DR JOBS ***********************'
+DECLARE @lsRsJob VARCHAR(50)
+DECLARE @lclSvr VARCHAR(50)
+DECLARE @DRSVRSIMP VARCHAR(20)
+
+SET @DRSVRSIMP = (
+SELECT LEFT(secondary_server,CHARINDEX('.',secondary_server)-1)  FROM msdb.dbo.log_shipping_primary_secondaries   
+	WHERE secondary_database = 'WSS_Logging'
+	)
+
+SET @lclSvr = (SELECT @@SERVERNAME)
+SET @HealthJob = (SELECT name FROM msdb.dbo.sysjobs WHERE name LIKE '%health%')
+SET @AlertJob = 'LSAlert_' + @DRSVRSIMP
+SET @lsRSJob = 'LSRestore_' + @lclSvr + '_Wss_logging'
+
+
+
+SET @sql = 'EXEC msdb.dbo.sp_update_job @job_name = [' + @healthjob + '], @enabled = 0'
+PRINT @sql
+SET @sql = 'EXEC msdb.dbo.sp_update_job @job_name = [' + @AlertJob + '], @enabled = 0'
+PRINT @sql
+SET @sql = 'EXEC msdb.dbo.sp_update_job @job_name = [' + @lsRsJob + '], @enabled = 0'
+PRINT @sql
+
+
+
+--****************************BUILD THE RESTORE STRINGs***********************************
+SET @with = ' WITH REPLACE, NORECOVERY'
+
+SET @RestoreFullstr = 
+'DECLARE @sql NVARCHAR(2000) '+ CHAR(13) +
+'SET @sql =  ' + CHAR(39) + 'EXECUTE AS LOGIN = ' +CHAR(39) + '+ char(39) + '+ CHAR(39) + 'sa' + CHAR(39) +'  + char(39)+ '
++ CHAR(39) + ' RESTORE DATABASE WSS_Logging FROM DISK = ' + CHAR(39) + ' + CHAR(39) +' + CHAR(39)
++ LEFT(@DRBKSVR, LEN(@DRBKSVR)-1) + @FileName + char(39) 
++ ' + CHAR(39) + ' + CHAR(39) + @with + CHAR(39) + CHAR(13) + 'EXEC sp_executesql @sql'
+
+PRINT ''
+PRINT '--**************************************************************'
+PRINT '--*************** RUN ON DR DB SERVER **************************' 
+PRINT '--*************** RESTORE FULL STRING **************************'
+
+PRINT @RestoreFullstr
+
+
+
+SET @RestoreDiffstr = 'RESTORE DATABASE [Wss_Logging] FROM DISK = '		--Build the Differential Restore String
++ CHAR(39) + @DiFFBack  + CHAR(39) 
++ 'WITH STANDBY = ' + CHAR(39) + 'E:\Program Files\Microsoft SQL Server\MSSQL10_50.MSSQLSERVER\MSSQL\DATA\Wss_Logging.tuf' + CHAR(39)
+PRINT @RestoreDiffstr
+
+
+
+/*
+
+ISSUE SUMMARY
+===========================
+SharePoint Cumulative Update
+
+SERVICE IMPACT
+==========================
+none
+
+PROBABLE CAUSE
+=========================
+Operations
+
+PROPOSED ACTION PLAN
+=========================
+rebuild log shipping for WSS_Logging
+
+BUSINESS IMPACT
+========================
+none
+
+*/

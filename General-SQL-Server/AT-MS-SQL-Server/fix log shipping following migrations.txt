@@ -1,0 +1,18 @@
+SELECT  [primary_id]
+      ,[primary_server]
+      ,[primary_database]
+      ,[backup_threshold]
+      ,[threshold_alert]
+      ,[threshold_alert_enabled]
+      ,[last_backup_file]
+      ,[last_backup_date]
+      ,[last_backup_date_utc]
+      ,[history_retention_period]
+  FROM [msdb].[dbo].[log_shipping_monitor_primary]
+  ORDER BY primary_database
+  
+  DELETE FROM [msdb].[dbo].[log_shipping_monitor_primary]
+  WHERE primary_database IN ('My_Content_05','My_Content_06','My_Content_07','My_Content_08')
+
+DELETE FROM [msdb].[dbo].[log_shipping_primary_databases]
+  WHERE primary_database IN ('My_Content_05','My_Content_06','My_Content_07','My_Content_08')

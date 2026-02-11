@@ -1,0 +1,42 @@
+--restore history
+SELECT  [secondary_database]
+      ,[secondary_id]
+      ,[restore_delay]
+      ,[restore_all]
+      ,[restore_mode]
+      ,[disconnect_users]
+      ,[block_size]
+      ,[buffer_count]
+      ,[max_transfer_size]
+      ,[last_restored_file]
+      ,[last_restored_date]
+  FROM [msdb].[dbo].[log_shipping_secondary_databases]
+
+
+--on the prod server
+SELECT 
+LSMP.primary_server
+,LSPS.secondary_server
+,LSMP.primary_database
+,LSPS.secondary_database
+,LSPD.backup_directory
+,LSPD.backup_share
+,LSPD.monitor_server
+FROM msdb.dbo.log_shipping_monitor_primary LSMP
+INNER JOIN msdb.dbo.log_shipping_primary_databases LSPD
+ON LSMP.primary_id = LSPD.primary_id
+INNER JOIN msdb.dbo.log_shipping_primary_secondaries LSPS
+ON LSPD.primary_id = LSPS.primary_id
+
+
+--on the dr server
+
+SELECT  
+      [primary_server]
+      ,[primary_database]
+      ,[backup_source_directory]
+      ,[backup_destination_directory]
+      ,[monitor_server]
+      ,[last_copied_file]
+      ,[last_copied_date]
+  FROM [msdb].[dbo].[log_shipping_secondary]

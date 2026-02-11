@@ -1,0 +1,29 @@
+SELECT 
+Sp.SPID
+,Sp.Status
+,sp.hostprocess
+,Sp.HostName
+,Sp.Loginame
+,Sp.CPU
+,Sp.Physical_IO
+,Sp.Blocked
+,DB_NAME(Sp.DBID) as [Database]
+,Sp.CMD
+,Sp.[Program_Name]
+,Sp.UID
+,Sp.MemUsage
+,Sp.Waitresource
+,Sp.WaitType
+,Sp.LastWaitType
+,Sp.Login_Time
+,Sp.Last_Batch
+,Sp.Open_tran
+,Sp.HostName
+,Sp.[sql_handle]
+,s2.text 
+FROM sys.sysprocesses sp 
+CROSS APPLY Sys.Dm_Exec_Sql_Text(Sp.Sql_Handle) As S2 
+WHERE SP.spid > 50 and Sp.Blocked > 0 
+ORDER BY SP.cpu DESC
+
+
