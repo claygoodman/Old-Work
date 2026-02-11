@@ -1,0 +1,44 @@
+USE TMW_Live
+GO
+
+GRANT INSERT ON BRDG_EmailSettlements TO BoDaRptEml
+GRANT SELECT ON BRDG_EmailSettlements TO BoDaRptEml
+GRANT UPDATE ON BRDG_EMailSettlements TO BoDaRptEml
+GRANT DELETE ON BRDG_EMailSettlements TO BoDaRptEml
+GRANT ALTER ON BRDG_EmailSettlements TO BoDaRptEml
+
+GRANT INSERT ON BRDG_OutSettleRpts TO BoDaRptEml
+GRANT SELECT ON BRDG_OutSettleRpts TO BoDaRptEml
+GRANT UPDATE ON BRDG_OutSettleRpts TO BoDaRptEml
+GRANT DELETE ON BRDG_OutSettleRpts TO BoDaRptEml
+GRANT ALTER ON BRDG_OutSettleRpts TO BoDaRptEml
+
+GRANT INSERT ON BRDG_Fleets TO BoDaRptEml
+GRANT SELECT ON BRDG_Fleets TO BoDaRptEml
+GRANT UPDATE ON BRDG_Fleets TO BoDaRptEml
+GRANT DELETE ON BRDG_Fleets TO BoDaRptEml
+GRANT ALTER ON BRDG_Fleets TO BoDaRptEml
+
+GRANT INSERT ON BRDG_OutFleets TO BoDaRptEml
+GRANT SELECT ON BRDG_OutFleets TO BoDaRptEml
+GRANT UPDATE ON BRDG_OutFleets TO BoDaRptEml
+GRANT DELETE ON BRDG_OutFleets TO BoDaRptEml
+GRANT ALTER ON BRDG_OutFleets TO BoDaRptEml
+
+
+GRANT INSERT ON BRDG_TrackPids TO BoDaRptEml
+GRANT SELECT ON BRDG_TrackPids TO BoDaRptEml
+GRANT UPDATE ON BRDG_TrackPids TO BoDaRptEml
+GRANT DELETE ON BRDG_TrackPids TO BoDaRptEml
+GRANT ALTER ON BRDG_TrackPids TO BoDaRptEml
+
+GRANT INSERT ON BRDG_EmailSettlementsArchive TO BoDaRptEml
+GRANT SELECT ON BRDG_EMailSettlementsArchive TO BoDaRptEml
+GRANT UPDATE ON BRDG_EmailSettlementsArchive TO BoDaRptEml
+GRANT DELETE ON BRDG_EmailSettlementsArchive TO BoDaRptEml
+GRANT ALTER ON BRDG_EmailSettlementsArchive TO BoDaRptEml
+
+
+GRANT EXECUTE ON p_BRDG_LoadFleets TO BoDaRptEml
+GRANT EXECUTE ON p_BRDG_UniquePayPeriods TO BoDaRptEml
+GRANT EXECUTE ON p_BRDG_CleanupForBoDaRptEml TO BoDaRptEml
