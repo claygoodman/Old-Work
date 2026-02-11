@@ -1,0 +1,8 @@
+=SWITCH(Fields!SecondIndex.Value = 60, "Red", Fields!SecondIndex.Value <> 60, "No Color")
+
+put into properties/background color of textbox to get the color
+
+
+=SWITCH(Fields!SecondIndex.Value = 60, "Bold", Fields!SecondIndex.Value <> 60, "Default")
+
+select the font weight and replace the value "Default" with this code.
