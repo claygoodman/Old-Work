@@ -1,3 +1,0 @@
-SELECT name FROM msdb.dbo.sysjobs WHERE enabled = 0
-
---this runs well against against a group of servers
